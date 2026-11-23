@@ -1,5 +1,7 @@
 # OpenCode-Next（`dsh-opencode-oauth`）
 
+[English](./README.md) | 繁體中文
+
 DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
 > 衍生自 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)。為維持既有設定檔、帳號與歷史紀錄相容，內部套件與 provider 識別碼（`dsh-opencode-oauth`、`opencode-oauth`、`opencode-go-subscription`）維持不變。

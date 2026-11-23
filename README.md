@@ -1,5 +1,7 @@
 # OpenCode-Next (`dsh-opencode-oauth`)
 
+English | [繁體中文](./README.zh-TW.md)
+
 Native OpenCode OAuth & OpenCode Go Provider for DeepSeek Harness (DSH).
 
 > Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh). Internal package/provider identifiers (`dsh-opencode-oauth`, `opencode-oauth`, `opencode-go-subscription`) are preserved for configuration and account compatibility.
