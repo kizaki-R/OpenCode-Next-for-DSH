@@ -4,8 +4,6 @@
 
 DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
-> 衍生自 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)。為維持既有設定檔、帳號與歷史紀錄相容，內部套件與 provider 識別碼（`opencode-next`、`opencode-next`、`opencode-go-subscription`）維持不變。
-
 直連 OpenCode 官方推論端點（`/inference/openai/v1` 與 `/inference/go/v1`），避免舊版 `/zen` 匿名通道的 403 `FreeTierError` 與單一 IP 429 限流。
 
 ---
@@ -378,4 +376,4 @@ OpenCode 免費模型的 `Free usage limit reached` 主要依**網路出口 IP**
 - **正式選單門檻與依目錄自動圖片支援**：僅結構合格且狀態有效之 Go 對話模型會進入正式選單。圖片輸入（透過 DSH `attachments` 服務轉成 `image_url` data URI）會依上游 Go 目錄宣告自動開放給 `modalities.input` 含 `image`／`image/*` 的入選模型（含未來上架的新視覺模型，實際可否辨識以上游端點為準）；未宣告圖片輸入或模態未知之模型維持純文字，於附圖送出前直接拒絕（絕不靜默丟圖繼續送純文字，也不退回免費 OAuth），且不開放影片、音訊或 PDF 等其他檔案附件。
 
 ## 授權條款與來源聲明
-MIT License © 2026（見 [LICENSE](./LICENSE)）。本專案衍生自原作者 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)（`Copyright (c) 2026 FishBottle7`），並保留內部識別名稱以維持既有用戶設定相容。
+MIT License © 2026（見 [LICENSE](./LICENSE)）。本專案衍生自原作者 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)（`Copyright (c) 2026 FishBottle7`）。
