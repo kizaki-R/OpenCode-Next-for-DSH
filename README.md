@@ -4,8 +4,6 @@ English | [繁體中文](./README.zh-TW.md)
 
 Native OpenCode OAuth & OpenCode Go Provider for DeepSeek Harness (DSH).
 
-> Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh). Internal package/provider identifiers (`opencode-next`, `opencode-next`, `opencode-go-subscription`) are preserved for configuration and account compatibility.
-
 Connects directly to the official OpenCode `/inference/openai/v1` endpoint using personal OAuth tokens, eliminating 403 `FreeTierError` and harsh single-IP 429 rate limits.
 
 ## Highlights
