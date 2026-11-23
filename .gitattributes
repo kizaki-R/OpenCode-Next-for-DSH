@@ -1,0 +1,9 @@
+# 統一以 LF 存放，避免 Windows 的 CRLF 讓每次 diff 都出現整檔變動的假差異。
+# 專案執行在 Windows，但原始碼本身用 LF 完全沒有問題（Node.js 兩種都讀）。
+* text=auto eol=lf
+
+# 二進位檔案不要做換行轉換
+*.png binary
+*.jpg binary
+*.ico binary
+*.tgz binary

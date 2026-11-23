@@ -1,0 +1,9 @@
+# dsh-opencode-oauth bundle patch layer
+- insert:
+    - id: dsh-opencode-oauth
+      name: "dsh-opencode-oauth"
+      config:
+        bunTransport:
+          enabled: true
+          bunPath: ''
+          clientVersion: '2.0.32'

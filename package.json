@@ -1,0 +1,60 @@
+{
+  "name": "dsh-opencode-oauth",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Native OpenCode OAuth provider for DeepSeek Harness with dual-track credentials and full reasoning streaming",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/ui.js",
+    "./config": "./lib/config.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "bin",
+    "cordis.patch.yml"
+  ],
+  "bin": {
+    "dsh-opencode-login": "bin/login.mjs"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "llm-provider"
+  ],
+  "scripts": {
+    "check": "node --check lib/index.js && node --check lib/config.js && node --check lib/client.js && node --check lib/stream.js && node --check lib/catalog.js && node --check lib/probe.js && node --check lib/store.js && node --check lib/device-flow.js && node --check lib/constants.js && node --check lib/failures.js && node --check lib/token-manager.js && node --check lib/context-window.js && node --check lib/images.js && node --check lib/status.js && node --check lib/web-api.js && node --check lib/ui.js && node --check bin/login.mjs && node --check bin/smoke.mjs",
+    "test": "node test/run-tests.mjs",
+    "smoke": "node bin/smoke.mjs",
+    "login": "node bin/login.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-locale"
+      ]
+    },
+    "compatibility": {
+      "dsh": ">=0.1.5-rc.1 <0.3.0",
+      "dshReleases": {
+        "0.1.5-rc.1": "compatible",
+        "0.2.0-rc.2": "compatible"
+      }
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/schemastery": ">=3.18.0"
+  },
+  "license": "MIT"
+}

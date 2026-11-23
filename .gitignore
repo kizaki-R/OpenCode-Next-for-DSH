@@ -1,0 +1,14 @@
+# 依賴。由 npm install / pnpm install 重建，不進版控。
+node_modules/
+
+# 打包產物。每次 npm pack 都會重新產生，而且它的職責就是反映當下的原始碼；
+# 把它納入版控只會讓「原始碼改了但忘記重打包」變成一個看起來正常的 diff。
+*.tgz
+
+# 測試與執行期暫存
+*.log
+.DS_Store
+Thumbs.db
+
+# 本機用的設定覆寫（若日後產生）
+*.local.json
