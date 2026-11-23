@@ -213,17 +213,24 @@ Two other defects in the same path were fixed alongside it:
 
 ## Quick Start
 
-### Install via DSH CLI
+### Install via DSH CLI (Recommended)
 
 ```bash
-# From npm (once published)
+# Install from npm
 dsh plugin --profile desktop add opencode-next
+```
+
+Alternative sources:
+
+```bash
+# Install from GitHub Release tarball
+dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.0/opencode-next-1.0.0.tgz
 
 # Or directly from GitHub
 dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 ```
 
-*(For Web/Headless profiles, replace `--profile desktop` with `--profile web`.)*
+*(For Web/Headless profiles, replace `--profile desktop` with `--profile web`. Restart DSH after installing, then open **Settings → OpenCode-Next** to sign in or configure your OpenCode Go API key.)*
 
 ### Installing from a local tarball
 

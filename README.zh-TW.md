@@ -115,17 +115,24 @@ DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
 ## 安裝至 DSH Profile
 
-### 方式 1：透過 DSH CLI 安裝（一般使用者推薦）
+### 方式 1：透過 DSH CLI 一行安裝（推薦）
 
 ```bash
-# 從 npm 安裝（發佈後）
+# 從 npm 安裝（最簡單）
 dsh plugin --profile desktop add opencode-next
+```
 
-# 或直接從 GitHub 安裝
+其他安裝來源：
+
+```bash
+# 從 GitHub Release 下載安裝
+dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.0/opencode-next-1.0.0.tgz
+
+# 或直接從 GitHub 倉庫安裝
 dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 ```
 
-*（若為 Web 或 Headless 模式，將 `--profile desktop` 改為 `--profile web`。）*
+*（若為 Web 或 Headless 模式，將 `--profile desktop` 改為 `--profile web`。安裝後重啟 DSH，即可在「設定 → OpenCode-Next」登入免費帳號或設定 OpenCode Go API Key。）*
 
 ### 方式 2：本地目錄軟連結（開發者用）
 
