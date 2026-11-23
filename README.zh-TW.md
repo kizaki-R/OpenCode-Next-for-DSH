@@ -115,10 +115,16 @@ DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
 ## 安裝至 DSH Profile
 
-### 方式 1：透過 DSH CLI 一行安裝（推薦）
+### 方式 1：透過 DSH 桌面版介面直接安裝（最簡單）
+
+1. 在 DSH 左側點開 **「插件」→「添加插件」**。
+2. 輸入套件名稱 **`opencode-next`**（安裝源選 npm 官方源），或直接貼上 GitHub 倉庫網址 **`https://github.com/kizaki-R/OpenCode-Next-for-DSH`**（亦支援本地資料夾路徑）。
+3. 點擊 **「安裝」** 並重啟 DSH，即可在 **「設定 → OpenCode-Next」** 登入免費帳號或設定 OpenCode Go API Key。
+
+### 方式 2：透過 DSH CLI 安裝
 
 ```bash
-# 從 npm 安裝（最簡單）
+# 從 npm 安裝
 dsh plugin --profile desktop add opencode-next
 ```
 
@@ -134,7 +140,7 @@ dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 
 *（若為 Web 或 Headless 模式，將 `--profile desktop` 改為 `--profile web`。安裝後重啟 DSH，即可在「設定 → OpenCode-Next」登入免費帳號或設定 OpenCode Go API Key。）*
 
-### 方式 2：本地目錄軟連結（開發者用）
+### 方式 3：本地目錄軟連結（開發者用）
 
 在 `%USERPROFILE%\.dsh\profiles\desktop\package.json` 的 `dependencies` 中加入：
 ```json
@@ -152,7 +158,7 @@ dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 }
 ```
 
-### 方式 3：使用打包後的 tgz 安裝（離線分發）
+### 方式 4：使用打包後的 tgz 安裝（離線分發）
 
 ```bash
 dsh plugin --profile desktop add ./opencode-next-1.0.0.tgz

@@ -213,7 +213,13 @@ Two other defects in the same path were fixed alongside it:
 
 ## Quick Start
 
-### Install via DSH CLI (Recommended)
+### Install via DSH Desktop GUI (Easiest)
+
+1. Open **DSH → Plugins → Add Plugin** (or **Settings → Built-in Plugins**).
+2. Enter `opencode-next` (npm official registry) or `https://github.com/kizaki-R/OpenCode-Next-for-DSH` (GitHub repository URL).
+3. Click **Install**, restart DSH, and open **Settings → OpenCode-Next** to sign in or configure your OpenCode Go API key.
+
+### Install via DSH CLI
 
 ```bash
 # Install from npm
