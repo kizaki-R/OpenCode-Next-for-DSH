@@ -46,7 +46,7 @@ try {
     inputModalities: ['text'],
     efforts: []
   }]);
-  const overridden = catalog.describe('opencode-oauth', 'deepseek-v4.1-flash-free');
+  const overridden = catalog.describe('opencode-next', 'deepseek-v4.1-flash-free');
   check('provider descriptor uses manual context override', overridden.context.contextWindow === 300000);
   check('model list uses the same effective context value', catalog.getModels()[0].contextWindow === 300000);
   check('provider descriptor leaves output limit unchanged', overridden.defaultMaxTokens === 32000);
@@ -65,11 +65,11 @@ try {
 
   reloaded.set('deepseek-v4.1-flash-free', 310000);
   check('a changed override takes effect without rebuilding the catalog',
-    catalog.describe('opencode-oauth', 'deepseek-v4.1-flash-free').context.contextWindow === 310000);
+    catalog.describe('opencode-next', 'deepseek-v4.1-flash-free').context.contextWindow === 310000);
   check('setting one model does not affect another', reloaded.getOverride('some-other-model') === null);
 
   check('reset reports that an override was removed', reloaded.reset('deepseek-v4.1-flash-free') === true);
-  const restored = catalog.describe('opencode-oauth', 'deepseek-v4.1-flash-free');
+  const restored = catalog.describe('opencode-next', 'deepseek-v4.1-flash-free');
   check('reset immediately restores the catalog capacity', restored.context.contextWindow === 200000);
   check('reset removes custom source metadata', catalog.getModel('deepseek-v4.1-flash-free').contextSource === 'opencode');
   check('reset persists an empty override map', Object.keys(JSON.parse(readFileSync(settingsPath, 'utf8')).overrides).length === 0);

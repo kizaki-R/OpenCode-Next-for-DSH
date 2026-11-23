@@ -44,7 +44,7 @@ const reporter = createStatusReporter({
   tokenManager,
   catalog,
   config: {
-    providerId: 'opencode-oauth',
+    providerId: 'opencode-next',
     providerName: 'OpenCode (OAuth)',
     autoDetectModels: true,
     probeIntervalMs: 21600000,
@@ -430,7 +430,7 @@ check('the confirmation instruction is shown', accountText.includes('開啟下�
 check('the device code appears exactly once',
   accountPage.texts.filter((s) => s.includes('ABCD-1234')).length === 1,
   `${accountPage.texts.filter((s) => s.includes('ABCD-1234')).length} occurrences`);
-check('the provider id is shown', advancedText.includes('opencode-oauth'));
+check('the provider id is shown', advancedText.includes('opencode-next'));
 check('the plugin version is shown', advancedText.includes('0.1.0'));
 // 上面那行用的是本檔的假 status（版本寫死 0.1.0），所以它只證明「畫面會顯示
 // status 給的版本」，不證明「升版後顯示的是新版本」。補一條真的去讀 package.json

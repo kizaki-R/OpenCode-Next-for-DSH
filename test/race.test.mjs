@@ -96,7 +96,7 @@ export async function refreshAccessToken() {
     buildStatus: () => ({
       health: 'signed-out',
       healthMessage: 'x',
-      provider: { id: 'opencode-oauth', name: 'OpenCode (OAuth)' },
+      provider: { id: 'opencode-next', name: 'OpenCode (OAuth)' },
       version: '0.1.0',
       credential: { present: false },
       models: { total: 0, available: 0, probed: 0, models: [] },
@@ -139,7 +139,7 @@ export async function refreshAccessToken() {
     };
   };
 
-  const PREFIX = '/dsh-opencode-oauth/api';
+  const PREFIX = '/opencode-next/api';
   async function hit(method, route) {
     const res = makeRes();
     // handler 收到的是含前綴的完整路徑（它內部再自行剝掉前綴）。

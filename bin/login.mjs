@@ -24,7 +24,7 @@ async function openBrowser(url) {
 }
 
 async function main() {
-  console.log('=== OpenCode Console Device Login (dsh-opencode-oauth) ===\n');
+  console.log('=== OpenCode Console Device Login (opencode-next) ===\n');
   console.log('Requesting device authorization code...');
 
   try {

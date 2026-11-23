@@ -1,10 +1,10 @@
-# OpenCode-Next（`dsh-opencode-oauth`）
+# OpenCode-Next（`opencode-next`）
 
 [English](./README.md) | 繁體中文
 
 DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
-> 衍生自 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)。為維持既有設定檔、帳號與歷史紀錄相容，內部套件與 provider 識別碼（`dsh-opencode-oauth`、`opencode-oauth`、`opencode-go-subscription`）維持不變。
+> 衍生自 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)。為維持既有設定檔、帳號與歷史紀錄相容，內部套件與 provider 識別碼（`opencode-next`、`opencode-next`、`opencode-go-subscription`）維持不變。
 
 直連 OpenCode 官方推論端點（`/inference/openai/v1` 與 `/inference/go/v1`），避免舊版 `/zen` 匿名通道的 403 `FreeTierError` 與單一 IP 429 限流。
 
@@ -14,7 +14,7 @@ DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
 1. **雙軌 OAuth 認證**：
    * **自動繼承**：若本機已登入 OpenCode Desktop，外掛啟動時會讀取 `~/.local/share/opencode/opencode.db` 取得憑證，不需重複輸入帳號密碼。
-   * **獨立裝置碼登入**：未安裝 OpenCode Desktop 時，執行 `dsh-opencode-login`，於瀏覽器確認「Approve」即可完成授權並保存憑證。
+   * **獨立裝置碼登入**：未安裝 OpenCode Desktop 時，執行 `opencode-next-login`，於瀏覽器確認「Approve」即可完成授權並保存憑證。
 2. **官方正式推論通道**：
    * 免費通道送往 `https://opencode.ai/inference/openai/v1/chat/completions`，使用個人帳號配額，不再依賴受限的 `/zen` 匿名路徑。
 3. **推理串流（Reasoning & Text）**：
@@ -50,7 +50,7 @@ DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 | 完整重新驗證 | 6 小時 | 重新探測所有候選，讓已下架的模型自動消失 |
 
 探測結果、picker 發布清單與連續失敗計數會寫入
-`~/.dsh/opencode-oauth.models.json` 並於重啟後沿用；舊版 v1 快取仍可讀取，新寫入的
+`~/.dsh/opencode-next.models.json` 並於重啟後沿用；舊版 v1 快取仍可讀取，新寫入的
 快取會保存遲滯狀態。快取過期時會重新完整驗證，但不會先丟棄最後已知的 picker 狀態。
 
 每次探測會發出真實的串流請求，並在收到狀態列後立刻取消：正常模型約
@@ -113,30 +113,42 @@ DeepSeek Harness（DSH）的 OpenCode OAuth 與 OpenCode Go 提供者外掛。
 
 ---
 
-## 📦 安裝至 DSH Profile
+## 安裝至 DSH Profile
 
-### 方式 1：本地目錄軟連結（推薦開發／直接使用）
+### 方式 1：透過 DSH CLI 安裝（一般使用者推薦）
+
+```bash
+# 從 npm 安裝（發佈後）
+dsh plugin --profile desktop add opencode-next
+
+# 或直接從 GitHub 安裝
+dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
+```
+
+*（若為 Web 或 Headless 模式，將 `--profile desktop` 改為 `--profile web`。）*
+
+### 方式 2：本地目錄軟連結（開發者用）
 
 在 `%USERPROFILE%\.dsh\profiles\desktop\package.json` 的 `dependencies` 中加入：
 ```json
 {
   "dependencies": {
-    "dsh-opencode-oauth": "link:/path/to/OpenCode-Next-for-DSH"
+    "opencode-next": "link:/path/to/OpenCode-Next-for-DSH"
   },
   "dsh": {
     "profile": {
       "bundles": [
-        "dsh-opencode-oauth"
+        "opencode-next"
       ]
     }
   }
 }
 ```
 
-### 方式 2：使用打包後的 tgz 安裝（推薦給其他電腦）
+### 方式 3：使用打包後的 tgz 安裝（離線分發）
 
 ```bash
-dsh plugin --profile desktop add ./dsh-opencode-oauth-0.9.5.tgz
+dsh plugin --profile desktop add ./opencode-next-1.0.0.tgz
 ```
 
 > **改完程式碼要重新打包。** `npm pack` 只會裝進 `package.json` 的 `files` 白名單
@@ -159,14 +171,14 @@ dsh plugin --profile desktop add ./dsh-opencode-oauth-0.9.5.tgz
 
 若在沒有安裝 OpenCode Desktop 的新電腦上使用：
 ```bash
-npx dsh-opencode-login
+npx opencode-next-login
 # 或
 node bin/login.mjs
 ```
 依照終端提示在瀏覽器打開授權連結，確認驗證碼後點擊同意。成功後會同時寫入：
 
-* `~/.dsh/opencode-oauth.token.json`（舊版單一憑證檔，權限 `0600`）
-* `~/.dsh/opencode-oauth.accounts.json`（帳號清單。已有相同憑證就不重複新增，並把該帳號設為目前使用中）
+* `~/.dsh/opencode-next.token.json`（舊版單一憑證檔，權限 `0600`）
+* `~/.dsh/opencode-next.accounts.json`（帳號清單。已有相同憑證就不重複新增，並把該帳號設為目前使用中）
 
 DSH 有帳號清單時會優先讀它。若 CLI 只寫舊檔，這次登入不會生效。每次 OAuth HTTP 請求有 15 秒逾時；授權被拒絕、代碼過期或整段等待逾時時，終端會印出原因，不會靜默結束。
 
@@ -176,16 +188,16 @@ DSH 有帳號清單時會優先讀它。若 CLI 只寫舊檔，這次登入不�
 
 預設零配置開箱即用。若需自訂，可在 `cordis.patch.yml` 加入：
 ```yaml
-- id: dsh-opencode-oauth
-  name: "dsh-opencode-oauth"
+- id: opencode-next
+  name: "opencode-next"
   config:
-    providerId: "opencode-oauth"        # 在模型清單中顯示的 provider ID
+    providerId: "opencode-next"        # 在模型清單中顯示的 provider ID
     providerName: "OpenCode (OAuth)"    # 顯示名稱
     streamIdleTimeoutMs: 60000          # 串流靜默逾時（毫秒）
     autoDetectModels: true              # 設為 false 可固定使用靜態清單
     catalogPollMs: 900000               # 15 分鐘；設為 0 可停用新模型輪詢
     probeIntervalMs: 21600000           # 6 小時完整重新驗證
-    probeCachePath: ""                  # 預設 ~/.dsh/opencode-oauth.models.json
+    probeCachePath: ""                  # 預設 ~/.dsh/opencode-next.models.json
     imagePixelBudget: 640000            # 800x800；超過此像素的圖片會先縮小
     imageMaxBytes: 2097152              # 每張投影後的圖片上限 2 MiB
 ```
@@ -213,7 +225,7 @@ DSH 有帳號清單時會優先讀它。若 CLI 只寫舊檔，這次登入不�
 | 模型 | 可用數／總數、探測時間、搜尋框、「只看有問題的」篩選、逐模型狀態／延遲／說明，以及每個模型的上下文容量設定 |
 | 診斷資訊 | provider 識別碼、外掛版本、探測間隔、目錄輪詢、圖片像素預算與位元組上限 |
 
-在模型列展開「上下文大小」，可選擇跟隨 OpenCode 目錄值或手動覆寫；「恢復預設值」會移除該模型的覆寫，不會發送探測請求。手動值會影響 DSH 收到的模型容量與預算，但不會提高上游實際上限，也不會更改 DSH 的壓縮策略。設定只保存模型 ID 與數字，位置為 `~/.dsh/opencode-oauth.context.json`（若設定 `DSH_HOME`，則存於該目錄）。
+在模型列展開「上下文大小」，可選擇跟隨 OpenCode 目錄值或手動覆寫；「恢復預設值」會移除該模型的覆寫，不會發送探測請求。手動值會影響 DSH 收到的模型容量與預算，但不會提高上游實際上限，也不會更改 DSH 的壓縮策略。設定只保存模型 ID 與數字，位置為 `~/.dsh/opencode-next.context.json`（若設定 `DSH_HOME`，則存於該目錄）。
 
 按下「登入」後，分頁會顯示裝置碼與驗證網址，並在授權完成前每 2 秒自動輪詢一次
 （平時為 15 秒）。
@@ -330,7 +342,7 @@ OpenCode 免費模型的 `Free usage limit reached` 主要依**網路出口 IP**
 | 「可用」 | 探測可用 (n) | 只探測目前看得到的模型 |
 | 其他篩選或搜尋 | 探測清單 (n) | 同上，只送出可見的 `modelIds` |
 
-結果是增量合併。這次沒探測到的模型，其延遲、可用狀態與歷史紀錄會留在 `~/.dsh/opencode-oauth.models.json`。切換帳號或重啟 DSH 不會清掉這份快取。篩選（例如停在「可用」）記在這個瀏覽器的 `localStorage`。
+結果是增量合併。這次沒探測到的模型，其延遲、可用狀態與歷史紀錄會留在 `~/.dsh/opencode-next.models.json`。切換帳號或重啟 DSH 不會清掉這份快取。篩選（例如停在「可用」）記在這個瀏覽器的 `localStorage`。
 
 上下文長度不要在列上展開。點該列「上下文」的數字（例如 `200k`）會開啟獨立視窗。
 
@@ -344,12 +356,12 @@ OpenCode 免費模型的 `Free usage limit reached` 主要依**網路出口 IP**
 
 ## OpenCode Go（訂閱資格驗證、模型目錄與文字／工具推論）
 
-本外掛內建獨立、預設關閉的 `opencode-go-subscription` provider 接點（`goSubscription.enabled` 預設為 `false`），不會影響既有免費 `opencode-oauth` 的模型清單、登入、設定、快取或通道行為：
+本外掛內建獨立、預設關閉的 `opencode-go-subscription` provider 接點（`goSubscription.enabled` 預設為 `false`），不會影響既有免費 `opencode-next` 的模型清單、登入、設定、快取或通道行為：
 
 - **獨立憑證解析與設定頁管理**：使用 OpenCode Console Personal API Key，優先透過 DSH 安全憑證服務（`goSubscription.credentialRef`，預設 `OPENCODE_GO_API_KEY`）解析，不可用時退回環境變數。可在「設定頁 → OpenCode Go」透過密碼欄位直接呼叫 `ctx.credentials.set`／`ctx.credentials.unset` 儲存或清除金鑰（不預填明文、只顯示已儲存或未設定；若目前 DSH 行程不支援 `credentials.set`，按鈕會保持停用，絕不改寫進外掛設定或 JSON 檔案）。不沿用 OAuth token（`st_*`）或 `org_id`，不自動匯入其他外掛憑證，且不將明文 key 寫入一般設定、狀態 API、錯誤或日誌。
 - **官方唯讀端點**：以 Bearer key 依序查詢 `GET https://opencode.ai/inference/go/v1/usage` 驗證訂閱資格與 `GET https://opencode.ai/inference/go/v1/models` 取得工作區模型目錄，固定 `https://opencode.ai` 目的地且不跟隨重新導向。換 key 或停用時會清除獨立快取（`~/.dsh/opencode-go.cache.json`）並阻擋舊請求回寫。
 - **文字串流與工具呼叫**：推論固定送往 `POST https://opencode.ai/inference/go/openai/v1/chat/completions`（`redirect: 'manual'`、`stream_options.include_usage`），`x-opencode-session` 必須來自 DSH 實際會話 ID（缺漏直接拒絕）。不沿用 CLI 身分標頭、Bun 請求改寫、工具別名或假工具；不自動換帳號、不跨 provider 退回、不自動重送計費請求，並分開保留 `usage.cost`、`usage.opencode.billing_source` 與 `usage.opencode.allowance`（未提供維持 `null`，不當成 `0`）。
-- **啟動自動載入、額度圖表與自訂 Go 選單**：儲存 Personal API Key 後，DSH 啟動（包含 `credentials` 服務延遲注入完成時）會在背景自動查詢唯讀 `/usage` 與 `/models` 並同步選單，不消耗推論額度。OpenCode Go 分頁提供 `5h Limit`、`7D Limit`、`1M Limit` 進度條、可收合的「金鑰」管理抽屜，以及左側「顯示」勾選欄（持久化於 `~/.dsh/opencode-oauth.go-picker.json`）。
+- **啟動自動載入、額度圖表與自訂 Go 選單**：儲存 Personal API Key 後，DSH 啟動（包含 `credentials` 服務延遲注入完成時）會在背景自動查詢唯讀 `/usage` 與 `/models` 並同步選單，不消耗推論額度。OpenCode Go 分頁提供 `5h Limit`、`7D Limit`、`1M Limit` 進度條、可收合的「金鑰」管理抽屜，以及左側「顯示」勾選欄（持久化於 `~/.dsh/opencode-next.go-picker.json`）。
 - **正式選單門檻與依目錄自動圖片支援**：僅結構合格且狀態有效之 Go 對話模型會進入正式選單。圖片輸入（透過 DSH `attachments` 服務轉成 `image_url` data URI）會依上游 Go 目錄宣告自動開放給 `modalities.input` 含 `image`／`image/*` 的入選模型（含未來上架的新視覺模型，實際可否辨識以上游端點為準）；未宣告圖片輸入或模態未知之模型維持純文字，於附圖送出前直接拒絕（絕不靜默丟圖繼續送純文字，也不退回免費 OAuth），且不開放影片、音訊或 PDF 等其他檔案附件。
 
 ## 授權條款與來源聲明

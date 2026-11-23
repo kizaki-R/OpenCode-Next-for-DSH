@@ -5,7 +5,7 @@ import { TokenManager } from '../lib/token-manager.js';
 import { OpenCodeOAuthAdapter } from '../lib/adapter.js';
 
 async function smoke() {
-  console.log('=== dsh-opencode-oauth Smoke Test ===\n');
+  console.log('=== opencode-next Smoke Test ===\n');
 
   // 1. Check Auth
   console.log('1. Checking OAuth credential...');

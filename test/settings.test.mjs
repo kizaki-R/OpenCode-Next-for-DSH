@@ -47,13 +47,13 @@ console.log('\nstatus reporter');
 
 // 這支測試會打真實的 /logout、/refresh 與 /accounts/switch 路由。若用預設路徑，
 // 跑一次 npm test 就會：
-//   1. 刪掉使用者真正的 ~/.dsh/opencode-oauth.models.json（/logout → invalidateProbe）
-//   2. 真的向上游刷新 token 並寫回 ~/.dsh/opencode-oauth.accounts.json
+//   1. 刪掉使用者真正的 ~/.dsh/opencode-next.models.json（/logout → invalidateProbe）
+//   2. 真的向上游刷新 token 並寫回 ~/.dsh/opencode-next.accounts.json
 // 兩者都是測試不該有的副作用。所以憑證、帳號清單與探測快取一律指向暫存檔，
 // 刷新函式也換成假的：這支測試驗的是路由與畫面，不是 OAuth。
 const sandboxDir = mkdtempSync(path.join(tmpdir(), 'ocoa-settings-'));
-const tokenStorePath = path.join(sandboxDir, 'opencode-oauth.token.json');
-const accountsPath = path.join(sandboxDir, 'opencode-oauth.accounts.json');
+const tokenStorePath = path.join(sandboxDir, 'opencode-next.token.json');
+const accountsPath = path.join(sandboxDir, 'opencode-next.accounts.json');
 const probeCachePath = path.join(sandboxDir, 'probe-cache.json');
 
 const tokenManager = new TokenManager(tokenStorePath, accountsPath, {
@@ -78,7 +78,7 @@ const contextWindowStore = {
   }
 };
 // 這支測試會打真實的 /logout 路由，而該路由會清掉探測快取。若用預設路徑，
-// 跑一次 npm test 就會刪掉使用者真正的 ~/.dsh/opencode-oauth.models.json。
+// 跑一次 npm test 就會刪掉使用者真正的 ~/.dsh/opencode-next.models.json。
 // 所以 catalog 一律指向暫存檔：測試只驗行為，不碰使用者的資料。
 const catalog = new ModelCatalog({ contextStore: contextWindowStore, probeCachePath });
 await catalog.init();
@@ -89,7 +89,7 @@ const reporter = createStatusReporter({
   catalog,
   autoSwitch: autoSwitchSettings,
   config: {
-    providerId: 'opencode-oauth',
+    providerId: 'opencode-next',
     providerName: 'OpenCode (OAuth)',
     autoDetectModels: true,
     probeIntervalMs: 21600000,
@@ -108,7 +108,7 @@ check('health is a known state',
   status.health);
 check('healthMessage is a non-empty string',
   typeof status.healthMessage === 'string' && status.healthMessage.length > 0);
-check('provider id is reported', status.provider.id === 'opencode-oauth');
+check('provider id is reported', status.provider.id === 'opencode-next');
 check('version is echoed back', status.version === '0.0.0-test');
 check('config snapshot is present',
   status.config.imagePixelBudget === 640000 && status.config.catalogPollMs === 900000);
@@ -216,14 +216,14 @@ registerWebApi(fakeCtx, {
   contextWindowStore,
   onAdaptersUpdated: () => { adapterUpdates++; },
   // /logout 會刪掉 config.credentialPath 指到的檔案。留空會退回預設的
-  // ~/.dsh/opencode-oauth.token.json，那就會刪到使用者的真憑證。
+  // ~/.dsh/opencode-next.token.json，那就會刪到使用者的真憑證。
   config: { credentialPath: tokenStorePath }
 });
 
 check('a route was registered', registered !== null);
 check('registered as a prefix route', registered?.kind === 'prefix');
 check('prefix is namespaced to this plugin',
-  registered?.path === '/dsh-opencode-oauth/api', registered?.path);
+  registered?.path === '/opencode-next/api', registered?.path);
 
 async function call(method, path, body = '', headers = null) {
   const res = {
@@ -249,7 +249,7 @@ async function call(method, path, body = '', headers = null) {
   return { status: res.status, headers: res.headers, parsed };
 }
 
-const okStatus = await call('GET', '/dsh-opencode-oauth/api/status');
+const okStatus = await call('GET', '/opencode-next/api/status');
 check('GET status returns 200', okStatus.status === 200, String(okStatus.status));
 check('GET status returns ok:true', okStatus.parsed?.ok === true);
 check('GET status sets a JSON content type',
@@ -260,36 +260,36 @@ check('GET status carries a resolvable version',
   typeof okStatus.parsed?.value?.version === 'string',
   String(okStatus.parsed?.value?.version));
 
-const autoSwitchOn = await call('POST', '/dsh-opencode-oauth/api/auto-switch', JSON.stringify({ enabled: true }));
+const autoSwitchOn = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: true }));
 check('POST auto-switch enables opt-in setting', autoSwitchOn.parsed?.value?.enabled === true);
-check('status reports auto-switch without secrets', (await call('GET', '/dsh-opencode-oauth/api/status')).parsed?.value?.autoSwitch?.enabled === true);
-const autoSwitchOff = await call('POST', '/dsh-opencode-oauth/api/auto-switch', JSON.stringify({ enabled: false }));
+check('status reports auto-switch without secrets', (await call('GET', '/opencode-next/api/status')).parsed?.value?.autoSwitch?.enabled === true);
+const autoSwitchOff = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: false }));
 check('POST auto-switch can disable setting', autoSwitchOff.parsed?.value?.enabled === false);
 
 const contextModel = catalog.getCandidates()[0];
 const contextDefault = contextModel.contextWindow;
-const contextSaved = await call('POST', '/dsh-opencode-oauth/api/context', JSON.stringify({
+const contextSaved = await call('POST', '/opencode-next/api/context', JSON.stringify({
   modelId: contextModel.id,
   contextWindow: 300000
 }));
 check('POST context saves a model-specific override',
   contextSaved.parsed?.ok === true && contextSaved.parsed.value.contextWindow === 300000);
 check('saving a context override notifies DSH to refresh model metadata', adapterUpdates === 1);
-const contextStatus = await call('GET', '/dsh-opencode-oauth/api/status');
+const contextStatus = await call('GET', '/opencode-next/api/status');
 const contextRow = contextStatus.parsed?.value?.models?.models?.find((m) => m.id === contextModel.id);
 check('status exposes effective and catalog context values',
   contextRow?.contextWindow === 300000 && contextRow?.catalogContextWindow === contextDefault && contextRow?.contextSource === 'custom');
-const badContext = await call('POST', '/dsh-opencode-oauth/api/context', JSON.stringify({
+const badContext = await call('POST', '/opencode-next/api/context', JSON.stringify({
   modelId: contextModel.id,
   contextWindow: 1.5
 }));
 check('POST context rejects non-integer values', badContext.parsed?.error === 'invalid_context_window');
-const unknownContext = await call('POST', '/dsh-opencode-oauth/api/context', JSON.stringify({
+const unknownContext = await call('POST', '/opencode-next/api/context', JSON.stringify({
   modelId: 'not-in-catalog',
   contextWindow: 300000
 }));
 check('POST context rejects unknown model ids', unknownContext.parsed?.error === 'unknown_model');
-const contextReset = await call('POST', '/dsh-opencode-oauth/api/context', JSON.stringify({
+const contextReset = await call('POST', '/opencode-next/api/context', JSON.stringify({
   modelId: contextModel.id,
   contextWindow: null
 }));
@@ -297,42 +297,42 @@ check('POST context null restores the provider default',
   contextReset.parsed?.ok === true && contextReset.parsed.value.contextWindow === contextDefault);
 check('restoring default notifies DSH to refresh model metadata', adapterUpdates === 2);
 
-const bare = await call('GET', '/dsh-opencode-oauth/api');
+const bare = await call('GET', '/opencode-next/api');
 check('the bare prefix also serves status', bare.parsed?.ok === true);
 
-const wrongMethod = await call('POST', '/dsh-opencode-oauth/api/status');
+const wrongMethod = await call('POST', '/opencode-next/api/status');
 check('a wrong method is rejected with 405', wrongMethod.status === 405, String(wrongMethod.status));
 check('the 405 body names the reason', wrongMethod.parsed?.error === 'method_not_allowed');
 
-const missing = await call('GET', '/dsh-opencode-oauth/api/nope');
+const missing = await call('GET', '/opencode-next/api/nope');
 check('an unknown route returns 404', missing.status === 404, String(missing.status));
 check('the 404 body is structured', missing.parsed?.ok === false && missing.parsed?.error === 'not_found');
 
 // A POST route must never echo a secret either.
-const logout = await call('POST', '/dsh-opencode-oauth/api/logout');
+const logout = await call('POST', '/opencode-next/api/logout');
 check('POST logout is handled', logout.parsed?.ok === true, JSON.stringify(logout.parsed)?.slice(0, 120));
 check('POST logout explains what it did',
   typeof logout.parsed?.value?.note === 'string' && logout.parsed.value.note.length > 0);
 check('POST logout never echoes a token',
   !JSON.stringify(logout.parsed).includes('st_'));
 
-const refresh = await call('POST', '/dsh-opencode-oauth/api/refresh');
+const refresh = await call('POST', '/opencode-next/api/refresh');
 check('POST refresh is structured',
   refresh.parsed?.ok === true || refresh.parsed?.error === 'refresh_failed',
   JSON.stringify(refresh.parsed)?.slice(0, 140));
 check('POST refresh never echoes a token', !JSON.stringify(refresh.parsed).includes('st_'));
 
 // Cross-origin and CSRF protection
-const crossOriginForbidden = await call('POST', '/dsh-opencode-oauth/api/auto-switch', JSON.stringify({ enabled: true }), { origin: 'https://evil.example.com' });
+const crossOriginForbidden = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: true }), { origin: 'https://evil.example.com' });
 check('cross-origin request is rejected with 403', crossOriginForbidden.status === 403 && crossOriginForbidden.parsed?.error === 'forbidden_origin');
 
-const crossSiteFetchForbidden = await call('POST', '/dsh-opencode-oauth/api/auto-switch', JSON.stringify({ enabled: true }), { 'sec-fetch-site': 'cross-site' });
+const crossSiteFetchForbidden = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: true }), { 'sec-fetch-site': 'cross-site' });
 check('cross-site sec-fetch-site is rejected with 403', crossSiteFetchForbidden.status === 403 && crossSiteFetchForbidden.parsed?.error === 'forbidden_origin');
 
-const crossPortForbidden = await call('POST', '/dsh-opencode-oauth/api/auto-switch', JSON.stringify({ enabled: true }), { host: '127.0.0.1:8428', origin: 'http://127.0.0.1:3000' });
+const crossPortForbidden = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: true }), { host: '127.0.0.1:8428', origin: 'http://127.0.0.1:3000' });
 check('cross-port loopback origin is rejected with 403', crossPortForbidden.status === 403 && crossPortForbidden.parsed?.error === 'forbidden_origin');
 
-const localOriginAllowed = await call('POST', '/dsh-opencode-oauth/api/auto-switch', JSON.stringify({ enabled: true }), { host: '127.0.0.1:8428', origin: 'http://127.0.0.1:8428' });
+const localOriginAllowed = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: true }), { host: '127.0.0.1:8428', origin: 'http://127.0.0.1:8428' });
 check('local 127.0.0.1 matching-port origin is allowed', localOriginAllowed.status === 200 && localOriginAllowed.parsed?.ok === true);
 
 // An internal throw must come back as a readable message, not a bare 500: the
@@ -357,7 +357,7 @@ const res = {
   writeHead(s, h) { this.status = s; this.headers = h; },
   end(b) { this.body = b; }
 };
-await brokenRegistered.handler({ method: 'GET', url: '/dsh-opencode-oauth/api/status' }, res);
+await brokenRegistered.handler({ method: 'GET', url: '/opencode-next/api/status' }, res);
 let brokenBody = null;
 try { brokenBody = JSON.parse(res.body); } catch { brokenBody = res.body; }
 check('an internal error is reported as ok:false', brokenBody?.ok === false, String(res.body));
@@ -426,7 +426,7 @@ vm.createContext(sandbox);
 vm.runInContext(uiSource, sandbox, { filename: 'ui.js' });
 
 check('the client file registers through __ModuleLoader__.load', envelope !== null);
-check('the client module declares this plugin id', envelope?.id === 'dsh-opencode-oauth');
+check('the client module declares this plugin id', envelope?.id === 'opencode-next');
 check('the client module exposes a factory', typeof envelope?.factory === 'function');
 
 const requires = [];
@@ -470,13 +470,13 @@ plugin.apply({
 
 check('the plugin registers into settings.section', injectTarget === 'settings.section', String(injectTarget));
 check('the section is registered', section !== null);
-check('the section id is this plugin', section?.meta?.id === 'dsh-opencode-oauth');
+check('the section id is this plugin', section?.meta?.id === 'opencode-next');
 check('the section has a numeric order', Number.isFinite(section?.meta?.order));
 // 12 and 13 are taken by antigravity and agy-next, and 15+ by others.
 check('the section order does not collide with neighbours', section?.meta?.order === 14,
   String(section?.meta?.order));
 check('the section declares its locale namespace',
-  section?.meta?.locale === 'dsh-opencode-oauth');
+  section?.meta?.locale === 'opencode-next');
 check('the section provides a label',
   typeof section?.meta?.label?.() === 'string' && section.meta.label().length > 0);
 
@@ -561,7 +561,7 @@ const copy = dictionaries[0]?.copy ?? {};
 check('the dictionary covers all three languages',
   ['en', 'zh', 'zh-Hant'].every((k) => k in copy), JSON.stringify(Object.keys(copy)));
 
-const styleEl = headChildren.find((el) => el.id === 'dsh-opencode-oauth-settings-style');
+const styleEl = headChildren.find((el) => el.id === 'opencode-next-settings-style');
 check('a style element is installed', styleEl !== undefined);
 check('the style element carries rules', (styleEl?.textContent ?? '').length > 500);
 // Theme tokens only: a hard-coded colour would ignore light/dark switching.

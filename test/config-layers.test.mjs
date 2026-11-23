@@ -75,7 +75,7 @@ try {
   }).trim());
   check('第二層載入成功並套用真實驗證（min 生效）', withEnv.realSchema,
     `msg=${withEnv.msg} → 目前是 stub`);
-  check('預設值仍正確（providerId）', withEnv.providerId === 'opencode-oauth', withEnv.providerId);
+  check('預設值仍正確（providerId）', withEnv.providerId === 'opencode-next', withEnv.providerId);
   check('預設值仍正確（streamIdleTimeoutMs）', withEnv.idle === 60000, String(withEnv.idle));
   if (withEnv.realSchema) console.log(`         驗證器訊息：${withEnv.msg}`);
 
@@ -89,7 +89,7 @@ try {
       HOME: path.join(tmpdir(), '__no_such_home__')
     }
   }).trim());
-  check('沒有環境變數時不丟例外（安全退到 stub）', noEnv.providerId === 'opencode-oauth',
+  check('沒有環境變數時不丟例外（安全退到 stub）', noEnv.providerId === 'opencode-next',
     noEnv.providerId);
   check('退到 stub 時驗證放行（確認真的是 stub，不是意外成功）', noEnv.realSchema === false,
     '仍是真驗證器，此情境沒有測到第三層');

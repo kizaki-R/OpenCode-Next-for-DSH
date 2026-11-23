@@ -58,7 +58,7 @@ function imageRef(id = 'sha256:' + 'a'.repeat(64)) {
   };
 }
 
-console.log('\n[dsh-opencode-oauth] content conversion regression\n');
+console.log('\n[opencode-next] content conversion regression\n');
 
 // ---------------------------------------------------------------- 缺陷 1
 console.log('system message');

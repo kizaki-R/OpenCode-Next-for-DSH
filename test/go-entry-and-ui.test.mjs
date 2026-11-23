@@ -2,7 +2,7 @@
  * OpenCode Go 入口接點、選單防護、HTTP 路由與設定頁整合測試（全離線）。
  *
  * 驗證：
- *   1. 預設停用時，`apply()` 僅註冊一個 `opencode-oauth` provider，既有 OAuth 行為不變。
+ *   1. 預設停用時，`apply()` 僅註冊一個 `opencode-next` provider，既有 OAuth 行為不變。
  *   2. 明確啟用 `goSubscription.enabled: true` 時，註冊獨立 `opencode-go-subscription` adapter；
  *      Stage 1 下 `listModels()` 固定回傳 `[]`（正式選單不出現不能推論的模型），
  *      呼叫 `prepareCall()` / `stream()` 會清楚回報 Stage 1 未支援推論。
@@ -103,7 +103,7 @@ try {
 
   console.log('--- Entry hook & Stage 1 picker guard ---');
 
-  await check('預設設定僅註冊 opencode-oauth，不註冊 opencode-go-subscription', async () => {
+  await check('預設設定僅註冊 opencode-next，不註冊 opencode-go-subscription', async () => {
     const origFetch = globalThis.fetch;
     globalThis.fetch = async () => ({
       ok: true,
@@ -119,7 +119,7 @@ try {
       });
       await new Promise((r) => setTimeout(r, 15));
       assert.equal(record.adapters.length, 1);
-      assert.deepEqual(record.adapters[0].ids, ['opencode-oauth']);
+      assert.deepEqual(record.adapters[0].ids, ['opencode-next']);
       for (const h of record.disposeHandlers) h();
     } finally {
       globalThis.fetch = origFetch;
@@ -146,7 +146,7 @@ try {
       });
       await new Promise((r) => setTimeout(r, 15));
       assert.equal(record.adapters.length, 2);
-      assert.deepEqual(record.adapters[0].ids, ['opencode-oauth']);
+      assert.deepEqual(record.adapters[0].ids, ['opencode-next']);
       assert.deepEqual(record.adapters[1].ids, ['opencode-go-subscription']);
       assert.deepEqual(record.adapters[1].adapter.providerInfo('opencode-go-subscription'), {
         id: 'opencode-go-subscription',
@@ -335,12 +335,12 @@ try {
       { tokenManager, catalog, statusReporter: reporter, goService, onAdaptersUpdated: () => { adapterUpdates++; } }
     );
 
-    const crossOrigin = await callRoute(registered, 'POST', '/dsh-opencode-oauth/api/go/refresh', '', {
+    const crossOrigin = await callRoute(registered, 'POST', '/opencode-next/api/go/refresh', '', {
       origin: 'https://evil.example.com'
     });
     assert.equal(crossOrigin.status, 403);
 
-    const refreshed = await callRoute(registered, 'POST', '/dsh-opencode-oauth/api/go/refresh');
+    const refreshed = await callRoute(registered, 'POST', '/opencode-next/api/go/refresh');
     assert.equal(refreshed.status, 200);
     assert.equal(refreshed.parsed.ok, true);
     assert.equal(refreshed.parsed.value.go.connectionState, 'connected');
@@ -350,11 +350,11 @@ try {
     assert.equal(JSON.stringify(refreshed.parsed).includes(secret), false);
     assert.equal(JSON.stringify(refreshed.parsed).includes(secret.slice(0, 8)), false);
 
-    const statusRes = await callRoute(registered, 'GET', '/dsh-opencode-oauth/api/status');
+    const statusRes = await callRoute(registered, 'GET', '/opencode-next/api/status');
     assert.equal(statusRes.parsed.value.go.connectionState, 'connected');
     assert.equal(JSON.stringify(statusRes.parsed).includes(secret), false);
 
-    const cleared = await callRoute(registered, 'POST', '/dsh-opencode-oauth/api/go/clear');
+    const cleared = await callRoute(registered, 'POST', '/opencode-next/api/go/clear');
     assert.equal(cleared.parsed.ok, true);
     assert.equal(cleared.parsed.value.go.connectionState, 'unconfigured');
     assert.deepEqual(cleared.parsed.value.go.previewModels, []);
@@ -392,7 +392,7 @@ try {
       const status = {
         health: 'signed-out',
         healthMessage: '',
-        provider: { id: 'opencode-oauth', name: 'OpenCode (OAuth)' },
+        provider: { id: 'opencode-next', name: 'OpenCode (OAuth)' },
         version: '0.9.5-test',
         credential: { present: false, source: null },
         models: { total: 0, probed: 0, available: 0, models: [] },
@@ -600,7 +600,7 @@ try {
     const csrfSave = await callRoute(
       record.webHandler,
       'POST',
-      '/dsh-opencode-oauth/api/go/credential',
+      '/opencode-next/api/go/credential',
       JSON.stringify({ key: 'oc_go_evil_key_000' }),
       { host: '127.0.0.1:5140', origin: 'https://evil.example' }
     );
@@ -612,7 +612,7 @@ try {
     const rejectOauth = await callRoute(
       record.webHandler,
       'POST',
-      '/dsh-opencode-oauth/api/go/credential',
+      '/opencode-next/api/go/credential',
       JSON.stringify({ key: badToken })
     );
     assert.equal(rejectOauth.status, 200);
@@ -626,7 +626,7 @@ try {
     const saveRes = await callRoute(
       record.webHandler,
       'POST',
-      '/dsh-opencode-oauth/api/go/credential',
+      '/opencode-next/api/go/credential',
       JSON.stringify({ key: savedKey })
     );
     assert.equal(saveRes.status, 200);
@@ -634,7 +634,7 @@ try {
     assert.equal(store.get('OPENCODE_GO_API_KEY'), savedKey);
     assert.equal(fetchCalls, 0);
 
-    const statusAfterSave = await callRoute(record.webHandler, 'GET', '/dsh-opencode-oauth/api/status');
+    const statusAfterSave = await callRoute(record.webHandler, 'GET', '/opencode-next/api/status');
     const serializedStatus = JSON.stringify(statusAfterSave.parsed);
     assert.equal(statusAfterSave.parsed.value.go.credential.present, true);
     assert.equal(statusAfterSave.parsed.value.go.credential.source, 'dsh-credentials');
@@ -648,7 +648,7 @@ try {
     const clearRes = await callRoute(
       record.webHandler,
       'POST',
-      '/dsh-opencode-oauth/api/go/credential/clear',
+      '/opencode-next/api/go/credential/clear',
       '{}'
     );
     assert.equal(clearRes.status, 200);
@@ -709,7 +709,7 @@ try {
     const res = await callRoute(
       record.webHandler,
       'POST',
-      '/dsh-opencode-oauth/api/go/credential',
+      '/opencode-next/api/go/credential',
       JSON.stringify({ key: unsavedKey })
     );
     assert.equal(res.status, 200);
@@ -750,7 +750,7 @@ try {
       const fakeStatus = {
         health: 'signed-out',
         healthMessage: '',
-        provider: { id: 'opencode-oauth', name: 'OpenCode (OAuth)' },
+        provider: { id: 'opencode-next', name: 'OpenCode (OAuth)' },
         version: '0.9.5-test',
         credential: { present: false, source: null },
         models: { total: 0, probed: 0, available: 0, models: [] },
@@ -942,7 +942,7 @@ try {
       const fakeStatus = {
         health: 'signed-out',
         healthMessage: '',
-        provider: { id: 'opencode-oauth', name: 'OpenCode (OAuth)' },
+        provider: { id: 'opencode-next', name: 'OpenCode (OAuth)' },
         version: '0.9.5-test',
         credential: { present: false, source: null },
         models: { total: 0, probed: 0, available: 0, models: [] },

@@ -12,20 +12,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  *
  * 這條規則來自兩次真實事故：`settings.test.mjs` 用預設路徑建立 catalog 與
  * TokenManager，再打 `/logout` 與 `/refresh`，於是跑一次 `npm test` 就
- * 刪掉 `~/.dsh/opencode-oauth.models.json`（整份探測紀錄），還會真的向上游
- * 刷新 token 並改寫 `opencode-oauth.accounts.json`。
+ * 刪掉 `~/.dsh/opencode-next.models.json`（整份探測紀錄），還會真的向上游
+ * 刷新 token 並改寫 `opencode-next.accounts.json`。
  *
  * 使用者的症狀是「打開設定頁，先前的探測紀錄不見了」，而元凶是測試本身。
  * 所以每次執行前後都對這幾個檔做雜湊比對，一有變動就讓整輪失敗並指名檔案。
  */
 const DSH_HOME = process.env.DSH_HOME || path.join(os.homedir(), '.dsh');
 const GUARDED = [
-  'opencode-oauth.models.json',
-  'opencode-oauth.accounts.json',
-  'opencode-oauth.token.json',
-  'opencode-oauth.picker.json',
-  'opencode-oauth.go-picker.json',
-  'opencode-oauth.context.json'
+  'opencode-next.models.json',
+  'opencode-next.accounts.json',
+  'opencode-next.token.json',
+  'opencode-next.picker.json',
+  'opencode-next.go-picker.json',
+  'opencode-next.context.json'
 ];
 
 function snapshot() {
@@ -56,7 +56,7 @@ function runTest(testFile) {
   }
 }
 
-console.log('🚀 Running dsh-opencode-oauth Master Test Suite...\n');
+console.log('🚀 Running opencode-next Master Test Suite...\n');
 
 runTest('accounts.test.mjs');
 runTest('account-switch.test.mjs');

@@ -1,15 +1,15 @@
-# OpenCode-Next (`dsh-opencode-oauth`)
+# OpenCode-Next (`opencode-next`)
 
 English | [繁體中文](./README.zh-TW.md)
 
 Native OpenCode OAuth & OpenCode Go Provider for DeepSeek Harness (DSH).
 
-> Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh). Internal package/provider identifiers (`dsh-opencode-oauth`, `opencode-oauth`, `opencode-go-subscription`) are preserved for configuration and account compatibility.
+> Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh). Internal package/provider identifiers (`opencode-next`, `opencode-next`, `opencode-go-subscription`) are preserved for configuration and account compatibility.
 
 Connects directly to the official OpenCode `/inference/openai/v1` endpoint using personal OAuth tokens, eliminating 403 `FreeTierError` and harsh single-IP 429 rate limits.
 
 ## Highlights
-- **Dual-Track OAuth**: Automatically inherits logged-in OAuth tokens from local OpenCode Desktop (`~/.local/share/opencode/opencode.db`), or standalone browser login via `dsh-opencode-login` (RFC 8628 Device Authorization Flow).
+- **Dual-Track OAuth**: Automatically inherits logged-in OAuth tokens from local OpenCode Desktop (`~/.local/share/opencode/opencode.db`), or standalone browser login via `opencode-next-login` (RFC 8628 Device Authorization Flow).
 - **Official Authenticated Endpoint**: Uses `https://opencode.ai/inference/openai/v1/chat/completions`.
 - **Full Reasoning Stream**: Translates `reasoning_content` deltas directly to DSH `reasoning-delta` chunks in real time.
 - **Full Tool Calling**: Seamless support for DSH agentic tools (read, write, edit, pwsh, etc.).
@@ -39,7 +39,7 @@ Two cadences run in the background:
 | Full re-verification | 6 h | Re-probes every candidate so retired models drop out |
 
 Results, the published picker set, and consecutive-failure counters persist to
-`~/.dsh/opencode-oauth.models.json` and are reused on restart. Existing v1 cache
+`~/.dsh/opencode-next.models.json` and are reused on restart. Existing v1 cache
 files remain readable; newly written cache files include the durable failure
 state so restarting does not reset hysteresis. Stale results still trigger a
 full re-verification, without discarding the last known picker state first.
@@ -111,7 +111,7 @@ upstream limit.
   "autoDetectModels": true,        // set false to pin the static list
   "catalogPollMs": 900000,         // 15 min; 0 disables new-model polling
   "probeIntervalMs": 21600000,     // 6 h full re-verification
-  "probeCachePath": "",            // default ~/.dsh/opencode-oauth.models.json
+  "probeCachePath": "",            // default ~/.dsh/opencode-next.models.json
   "streamIdleTimeoutMs": 60000,    // fail a silent stream so the runtime can retry
   "imagePixelBudget": 640000,      // 800x800; images above this are downscaled
   "imageMaxBytes": 2097152         // 2 MiB per projected image
@@ -148,7 +148,7 @@ DSH Settings gains an "OpenCode OAuth" tab (order 14) with four blocks:
 | Models | Available vs. total, last probe time, search, an "only problems" filter, per-model status / latency / explanation, and a context-window setting for each model |
 | Diagnostics | Provider id, plugin version, probe interval, catalog poll, image pixel budget and byte cap |
 
-Expand a model's **Context window** setting to follow the OpenCode catalog value or enter a manual override. **Restore default** removes that model's override; it does not send a probe request. A manual value changes the capacity and budget DSH receives, but does not raise OpenCode's actual limit or change DSH's compaction policy. Only model IDs and numeric values are stored in `~/.dsh/opencode-oauth.context.json` (or under `DSH_HOME` when set).
+Expand a model's **Context window** setting to follow the OpenCode catalog value or enter a manual override. **Restore default** removes that model's override; it does not send a probe request. A manual value changes the capacity and budget DSH receives, but does not raise OpenCode's actual limit or change DSH's compaction policy. Only model IDs and numeric values are stored in `~/.dsh/opencode-next.context.json` (or under `DSH_HOME` when set).
 
 After starting a sign-in the tab shows the device code and verification URL, and
 polls every 2 s until authorization completes (15 s otherwise).
@@ -213,11 +213,23 @@ Two other defects in the same path were fixed alongside it:
 
 ## Quick Start
 
-### Installing on another computer
+### Install via DSH CLI
+
+```bash
+# From npm (once published)
+dsh plugin --profile desktop add opencode-next
+
+# Or directly from GitHub
+dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
+```
+
+*(For Web/Headless profiles, replace `--profile desktop` with `--profile web`.)*
+
+### Installing from a local tarball
 
 ```bash
 npm pack
-dsh plugin --profile desktop add ./dsh-opencode-oauth-0.9.5.tgz
+dsh plugin --profile desktop add ./opencode-next-1.0.0.tgz
 ```
 
 > **Re-pack after changing the source.** `npm pack` only includes files matched
@@ -299,7 +311,7 @@ The probe button follows the current filter:
 | Available | Probe available (n) | Only the models on screen |
 | Any other filter or search | Probe list (n) | Same, via the visible `modelIds` |
 
-Results merge. Models not in this run keep their latency, availability, and history in `~/.dsh/opencode-oauth.models.json`. Switching accounts or restarting DSH does not delete that cache. The filter (for example staying on Available) is remembered in this browser's `localStorage`.
+Results merge. Models not in this run keep their latency, availability, and history in `~/.dsh/opencode-next.models.json`. Switching accounts or restarting DSH does not delete that cache. The filter (for example staying on Available) is remembered in this browser's `localStorage`.
 
 To change a context window, click the number in the Context column (for example `200k`). That opens its own dialog; the row does not expand.
 
@@ -307,7 +319,7 @@ To change a context window, click the number in the Context column (for example 
 
 The account section has **Import from OpenCode Desktop**. It reads the Desktop sign-in and does not modify Desktop's database. Importing the same credential again does not create a duplicate; it switches to the existing account. An API-key-only local login is rejected, because the free lane does not accept API keys.
 
-`dsh-opencode-login` writes both `~/.dsh/opencode-oauth.token.json` and `~/.dsh/opencode-oauth.accounts.json`. If an account list already exists, DSH prefers it, so a CLI login that only updated the legacy file would not take effect. An identical access token is not added twice; that account becomes active. Each OAuth HTTP call times out after 15 seconds. A denied approval, an expired code, or a timed-out wait is reported; it is not swallowed.
+`opencode-next-login` writes both `~/.dsh/opencode-next.token.json` and `~/.dsh/opencode-next.accounts.json`. If an account list already exists, DSH prefers it, so a CLI login that only updated the legacy file would not take effect. An identical access token is not added twice; that account becomes active. Each OAuth HTTP call times out after 15 seconds. A denied approval, an expired code, or a timed-out wait is reported; it is not swallowed.
 
 ## Anonymous channel
 
@@ -315,12 +327,12 @@ The Advanced switch is off by default. When on, inference is sent without the pe
 
 ## OpenCode Go (Subscription Verification, Model Preview & Text/Tool Inference)
 
-An independent, opt-in `opencode-go-subscription` provider is included alongside `opencode-oauth` (`goSubscription.enabled` defaults to `false` so existing free OAuth behavior stays unchanged):
+An independent, opt-in `opencode-go-subscription` provider is included alongside `opencode-next` (`goSubscription.enabled` defaults to `false` so existing free OAuth behavior stays unchanged):
 
 - **Isolated credential resolution & UI management**: Uses an OpenCode Console Personal API Key via DSH's `credentials` service first (`goSubscription.credentialRef`, default `OPENCODE_GO_API_KEY`), falling back to the environment variable. In Settings → OpenCode Go, you can save or clear the key directly via `ctx.credentials.set` / `ctx.credentials.unset` without exposing or prefilling plaintext keys (if `credentials.set` is unavailable in the current DSH process, the button stays disabled and the key is never written into plugin config or JSON files). It never reuses OAuth tokens (`st_*`), `org_id`, or credentials from other plugins, and never stores plaintext keys in plugin config, status APIs, errors, or logs.
 - **Read-only official endpoints**: Queries `GET https://opencode.ai/inference/go/v1/usage` to verify Go subscription entitlement, followed by `GET https://opencode.ai/inference/go/v1/models` for workspace model metadata (`redirect: 'manual'`, fixed `https://opencode.ai` origin). Key changes or disabling clears the isolated cache (`~/.dsh/opencode-go.cache.json`) and blocks stale in-flight writes.
 - **Chat Completions text & tool calling**: Inference posts exclusively to `POST https://opencode.ai/inference/go/openai/v1/chat/completions` (`redirect: 'manual'`, `stream_options.include_usage`), requiring a real DSH `sessionId` for `x-opencode-session` (missing IDs are rejected without hashing or random UUIDs). It never uses CLI identity headers, Bun transport rewrites, tool aliases/baseline fake tools, auto-account switching, cross-provider fallback, or automatic retries of billed requests.
-- **Startup auto-sync, usage gauges & custom Go picker**: Once a Personal API Key is saved, DSH automatically runs a read-only background refresh (`/usage` and `/models`) on startup (including delayed `credentials` service injection) without consuming inference quota. The OpenCode Go tab displays `5h Limit`, `7D Limit`, and `1M Limit` progress bars, a collapsible `API Key` drawer, and per-model picker checkboxes (`~/.dsh/opencode-oauth.go-picker.json`).
+- **Startup auto-sync, usage gauges & custom Go picker**: Once a Personal API Key is saved, DSH automatically runs a read-only background refresh (`/usage` and `/models`) on startup (including delayed `credentials` service injection) without consuming inference quota. The OpenCode Go tab displays `5h Limit`, `7D Limit`, and `1M Limit` progress bars, a collapsible `API Key` drawer, and per-model picker checkboxes (`~/.dsh/opencode-next.go-picker.json`).
 - **Selective picker publishing & catalog-driven image input**: Only eligible active Go text/chat models enter DSH's formal model picker. Image input (`image_url` data URIs via DSH `attachments`) is automatically advertised and sent for eligible models whose upstream Go catalog declares `image` / `image/*` input modalities; models without declared image input stay text-only and reject image attachments before any request is sent (never silently dropping images or falling back to free OAuth). Video, audio, and other non-image attachments remain unsupported.
 
 ## License & Attribution

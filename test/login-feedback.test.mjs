@@ -130,7 +130,7 @@ function makeRes() {
 
 async function hit(method, route) {
   const res = makeRes();
-  await handler({ method, url: `/dsh-opencode-oauth/api${route}`, headers: {}, on() {} }, res);
+  await handler({ method, url: `/opencode-next/api${route}`, headers: {}, on() {} }, res);
   for (let i = 0; i < 50 && !res.done; i++) await new Promise((r) => setTimeout(r, 10));
   let json = null;
   try { json = JSON.parse(res.body); } catch { /* 非 JSON 時留給斷言 */ }

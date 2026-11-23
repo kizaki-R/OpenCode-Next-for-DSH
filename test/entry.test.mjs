@@ -37,7 +37,7 @@ const indexUrl = new URL('../lib/index.js', import.meta.url);
 console.log('--- 載入器需要的具名匯出 ---');
 const mod = await import(indexUrl.href);
 
-check('匯出 name 且值正確', mod.name === 'dsh-opencode-oauth', String(mod.name));
+check('匯出 name 且值正確', mod.name === 'opencode-next', String(mod.name));
 check('inject 只要求 llm（attachments 刻意延遲解析）',
   Array.isArray(mod.inject) && mod.inject.includes('llm') && !mod.inject.includes('attachments'),
   JSON.stringify(mod.inject));
@@ -129,7 +129,7 @@ try {
 
   check('向 ctx.llm 註冊了恰一個 provider', record.adapters.length === 1, String(record.adapters.length));
   const reg = record.adapters[0];
-  check('註冊的 provider id 來自設定', Array.isArray(reg?.ids) && reg.ids[0] === 'opencode-oauth',
+  check('註冊的 provider id 來自設定', Array.isArray(reg?.ids) && reg.ids[0] === 'opencode-next',
     JSON.stringify(reg?.ids));
   check('註冊的物件像個 adapter（有 generate 或 stream）',
     typeof reg?.adapter?.generate === 'function' || typeof reg?.adapter?.stream === 'function',

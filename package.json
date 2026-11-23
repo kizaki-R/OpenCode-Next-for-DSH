@@ -1,8 +1,15 @@
 {
-  "name": "dsh-opencode-oauth",
+  "name": "opencode-next",
   "version": "1.0.0",
-  "private": true,
-  "description": "Native OpenCode OAuth provider for DeepSeek Harness with dual-track credentials and full reasoning streaming",
+  "description": "OpenCode-Next: Native OpenCode OAuth & OpenCode Go provider for DeepSeek Harness (DSH)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kizaki-R/OpenCode-Next-for-DSH.git"
+  },
+  "homepage": "https://github.com/kizaki-R/OpenCode-Next-for-DSH#readme",
+  "bugs": {
+    "url": "https://github.com/kizaki-R/OpenCode-Next-for-DSH/issues"
+  },
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -14,19 +21,23 @@
   "files": [
     "lib",
     "bin",
-    "cordis.patch.yml"
+    "cordis.patch.yml",
+    "README.zh-TW.md"
   ],
   "bin": {
-    "dsh-opencode-login": "bin/login.mjs"
+    "opencode-next-login": "bin/login.mjs"
   },
   "keywords": [
     "dsh",
     "dsh-plugin",
+    "opencode",
+    "opencode-go",
     "llm-provider"
   ],
   "scripts": {
     "check": "node --check lib/index.js && node --check lib/config.js && node --check lib/client.js && node --check lib/stream.js && node --check lib/catalog.js && node --check lib/probe.js && node --check lib/store.js && node --check lib/device-flow.js && node --check lib/constants.js && node --check lib/failures.js && node --check lib/token-manager.js && node --check lib/context-window.js && node --check lib/images.js && node --check lib/status.js && node --check lib/web-api.js && node --check lib/ui.js && node --check bin/login.mjs && node --check bin/smoke.mjs",
     "test": "node test/run-tests.mjs",
+    "prepublishOnly": "npm run check && npm test",
     "smoke": "node bin/smoke.mjs",
     "login": "node bin/login.mjs"
   },

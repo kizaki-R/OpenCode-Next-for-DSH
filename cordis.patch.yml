@@ -1,7 +1,7 @@
-# dsh-opencode-oauth bundle patch layer
+# opencode-next bundle patch layer
 - insert:
-    - id: dsh-opencode-oauth
-      name: "dsh-opencode-oauth"
+    - id: opencode-next
+      name: "opencode-next"
       config:
         bunTransport:
           enabled: true

@@ -24,7 +24,7 @@ function check(name, cond, detail = '') {
 
 console.log('--- 預設值 ---');
 const d = resolveConfig({});
-check('providerId', d.providerId === 'opencode-oauth', d.providerId);
+check('providerId', d.providerId === 'opencode-next', d.providerId);
 check('providerName 非空', typeof d.providerName === 'string' && d.providerName.length > 0, d.providerName);
 check('inferenceUrl 指向 opencode', /opencode/i.test(d.inferenceUrl), d.inferenceUrl);
 check('credentialPath 預設為空字串（代表自動偵測）', d.credentialPath === '', JSON.stringify(d.credentialPath));
@@ -43,7 +43,7 @@ let threw = null;
 let d2 = null;
 try { d2 = resolveConfig(); } catch (err) { threw = err; }
 check('resolveConfig() 不丟例外', threw === null, threw?.message);
-check('resolveConfig() 回傳預設值', d2?.providerId === 'opencode-oauth', d2?.providerId);
+check('resolveConfig() 回傳預設值', d2?.providerId === 'opencode-next', d2?.providerId);
 
 console.log('\n--- 假的預設值必須被保留（|| 會吃掉的那些）---');
 // 這是最容易寫錯的地方：0 與 false 是合法設定值，不是「沒給」。

@@ -202,7 +202,7 @@ await check('路由、標頭與會話隔離：不帶 CLI 身分、org_id、假�
     assert.equal(r.init.method, 'POST');
     assert.equal(r.init.redirect, 'manual');
     assert.equal(r.init.headers.Authorization, `Bearer ${key}`);
-    assert.ok(String(r.init.headers['User-Agent']).includes('dsh-opencode-oauth/'));
+    assert.ok(String(r.init.headers['User-Agent']).includes('opencode-next/'));
     assert.equal(String(r.init.headers['User-Agent']).includes('opencode-cli'), false);
     assert.equal(r.init.headers['x-opencode-client'], undefined);
     assert.equal(r.init.headers['x-opencode-org-id'], undefined);

@@ -153,7 +153,7 @@ try {
     try {
       const chunks = [];
       for await (const chunk of adapter.stream({
-        provider: 'opencode-oauth', model: fakeModel.id,
+        provider: 'opencode-next', model: fakeModel.id,
         messages: [{ role: 'user', content: 'Say OK' }],
         tools: [], maxTokens: 32
       })) chunks.push(chunk);
@@ -174,7 +174,7 @@ try {
     try {
       await assert.rejects(async () => {
         for await (const _chunk of adapter.stream({
-          provider: 'opencode-oauth', model: fakeModel.id,
+          provider: 'opencode-next', model: fakeModel.id,
           messages: [{ role: 'user', content: 'Say OK' }], tools: [], maxTokens: 32
         })) {}
       }, /TRANSPORT|Bun/);

@@ -72,7 +72,7 @@ const catalogStub = {
   getModel: () => ({ id: 'test-model', name: 'test', defaultMaxTokens: 1024, inputModalities: ['text'] }),
   describeAll: () => [],
   async describe(_provider, id) {
-    return { provider: 'opencode-oauth', id, name: id, inputModalities: ['text'] };
+    return { provider: 'opencode-next', id, name: id, inputModalities: ['text'] };
   }
 };
 const tokenStub = {
@@ -89,7 +89,7 @@ function makeAdapter(config) {
 }
 
 const baseOptions = {
-  provider: 'opencode-oauth',
+  provider: 'opencode-next',
   model: 'test-model',
   messages: [{ role: 'user', id: 'u1', content: [{ type: 'text', text: 'hi' }] }]
 };
@@ -100,7 +100,7 @@ async function drain(adapter, signal) {
   return chunks;
 }
 
-console.log('\n[dsh-opencode-oauth] stream watchdog\n');
+console.log('\n[opencode-next] stream watchdog\n');
 
 await check('a silent upstream fails with a retryable TIMEOUT', async () => {
   const restore = installFetch(sseStream([], { neverClose: true }));
