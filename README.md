@@ -326,33 +326,3 @@ An independent, opt-in `opencode-go-subscription` provider is included alongside
 ## License & Attribution
 
 MIT License — see [LICENSE](./LICENSE). Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh) (`Copyright (c) 2026 FishBottle7`).
-
-## Releasing: 1.0.0 requires explicit sign-off
-
-**Do not bump to 1.0.0 on your own.** A green test suite is not a release
-decision. Getting there requires asking, not inferring.
-
-This rule exists because it was broken once. The version was raised to 1.0.0
-right after the suite passed, while two items from the audit were still
-unbuilt and the settings page had never actually been looked at on screen. The
-suite was green the whole time. It proved the expected behaviour still worked,
-which is a different claim from "this is shippable".
-
-Before any 1.0.0 bump, confirm all four with the user:
-
-1. **Every agreed item is finished.** Not "the suite passes" — the actual
-   scope, including whatever was deferred during the work.
-2. **Someone has looked at the rendered page.** Tests assert the projection
-   produces expected text; they do not catch layout, colour, or overflow. On
-   this machine the DSH desktop shell gates the GUI behind an auth token, so
-   the agent cannot open it — the user has to look, and say so.
-3. **Real use has happened since the last behaviour change.** Especially for
-   changes to error messages or health states, which only matter at the moment
-   something fails.
-4. **The user has said, in words, to go to 1.0.0.** Not "when it's done", not
-   "都弄好了就改". Those are conditional statements whose conditions the agent
-   does not get to evaluate alone.
-
-Versions below 1.0.0 may be bumped without asking. Keep the test that checks
-the version is valid semver rather than pinning an exact number — a pinned
-number turns into "edit the test until it is green".
