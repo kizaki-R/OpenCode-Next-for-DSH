@@ -127,7 +127,7 @@ try {
     autoDetectModels: false
   });
 
-  check('向 ctx.llm 註冊了恰一個 provider', record.adapters.length === 1, String(record.adapters.length));
+  check('向 ctx.llm 註冊了 opencode-next 與 opencode-go-subscription', record.adapters.length === 2, String(record.adapters.length));
   const reg = record.adapters[0];
   check('註冊的 provider id 來自設定', Array.isArray(reg?.ids) && reg.ids[0] === 'opencode-next',
     JSON.stringify(reg?.ids));
@@ -164,7 +164,7 @@ try {
   }
 
   check('apply 不因設定頁失敗而丟出例外', applyThrew === null, applyThrew?.message);
-  check('provider 仍然註冊成功（模型可用性優先）', rec2.adapters.length === 1,
+  check('provider 仍然註冊成功（模型可用性優先）', rec2.adapters.length >= 1 && rec2.adapters[0]?.ids?.[0] === 'opencode-next',
     String(rec2.adapters.length));
   check('有記錄一筆 warning 說明設定頁不可用',
     rec2.logs.some(([lvl, msg]) => lvl === 'warn' && /Settings page unavailable/.test(msg)),

@@ -36,14 +36,15 @@ async function check(name, fn) {
 
 console.log('--- Config defaults & secret-free schema ---');
 
-await check('goSubscription 預設關閉', () => {
+await check('goSubscription 預設開啟且可明確關閉', () => {
   const cfg = resolveConfig({});
-  assert.equal(cfg.goSubscription?.enabled, false);
+  assert.equal(cfg.goSubscription?.enabled, true);
   assert.equal(cfg.goSubscription?.providerId, 'opencode-go-subscription');
   assert.equal(cfg.goSubscription?.credentialRef, 'OPENCODE_GO_API_KEY');
   assert.equal('apiKey' in cfg.goSubscription, false);
   assert.equal('secret' in cfg.goSubscription, false);
   assert.equal('token' in cfg.goSubscription, false);
+  assert.equal(resolveConfig({ goSubscription: { enabled: false } }).goSubscription?.enabled, false);
   assert.ok(Config);
 });
 

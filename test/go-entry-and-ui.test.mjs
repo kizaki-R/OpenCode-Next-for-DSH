@@ -115,7 +115,10 @@ try {
       entryMod.apply(ctx, {
         credentialPath,
         probeCachePath,
-        autoDetectModels: false
+        autoDetectModels: false,
+        goSubscription: {
+          enabled: false
+        }
       });
       await new Promise((r) => setTimeout(r, 15));
       assert.equal(record.adapters.length, 1);
