@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="OpenCode Next for DSH">
+<defs>
+<radialGradient id="bgl" cx="0.5" cy="0.4" r="0.8"><stop offset="0" stop-color="#171A22"/><stop offset="1" stop-color="#07080B"/></radialGradient>
+<linearGradient id="tOpen" gradientUnits="userSpaceOnUse" x1="0" y1="200" x2="0" y2="290"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#B7C3D6"/></linearGradient>
+<linearGradient id="tNext" gradientUnits="userSpaceOnUse" x1="924.4" y1="0" x2="1155.8" y2="0"><stop offset="0" stop-color="#2EE6D6"/><stop offset="0.5" stop-color="#3B82F6"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+<filter id="t2" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="4"/></filter>
+<linearGradient id="gRing" gradientUnits="userSpaceOnUse" x1="0" y1="158" x2="0" y2="354"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#94A3B8"/></linearGradient>
+<linearGradient id="gChev" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22D3EE"/><stop offset="1" stop-color="#3B82F6"/></linearGradient>
+<mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"><rect width="512" height="512" fill="#fff"/><path d="M377.15 200.85 A78 78 0 1 0 377.15 311.15" fill="none" stroke="#000" stroke-width="64" stroke-linecap="round"/></mask>
+<filter id="gGlow" filterUnits="userSpaceOnUse" x="-60" y="0" width="640" height="512"><feGaussianBlur stdDeviation="8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1280" height="640" fill="url(#bgl)"/>
+<g transform="translate(41.7 47.2) scale(0.8)">
+<g transform="translate(11 0)">
+<circle cx="190" cy="256" r="78" fill="none" stroke="url(#gRing)" stroke-width="40" mask="url(#cut)"/>
+<path d="M377.15 200.85 A78 78 0 1 0 377.15 311.15" fill="none" stroke="url(#gRing)" stroke-width="40" stroke-linecap="round"/>
+<path d="M334 234 L356 256 L334 278" fill="none" stroke="url(#gChev)" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" filter="url(#gGlow)"/>
+</g>
+</g>
+<text x="412.1" y="282" font-family="'Segoe UI','Microsoft JhengHei','Microsoft YaHei',Arial,sans-serif" font-size="96" font-weight="800" xml:space="preserve" opacity="0.35" filter="url(#t2)"><tspan fill="none">OpenCode</tspan><tspan fill="url(#tNext)"> Next</tspan></text>
+<text x="412.1" y="282" font-family="'Segoe UI','Microsoft JhengHei','Microsoft YaHei',Arial,sans-serif" font-size="96" font-weight="800" xml:space="preserve"><tspan fill="url(#tOpen)">OpenCode</tspan><tspan fill="url(#tNext)"> Next</tspan></text>
+<g font-family="'Segoe UI','Microsoft JhengHei','Microsoft YaHei',Arial,sans-serif" fill="#F2F4F8" text-anchor="middle" xml:space="preserve">
+<text x="640" y="420" font-size="34" font-weight="600">Native OpenCode provider for DeepSeek Harness</text>
+<text x="640" y="480" font-size="30" fill-opacity="0.7">OpenCode Free  ·  OpenCode Go  ·  Auto model sync</text>
+</g>
+</svg>

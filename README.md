@@ -1,3 +1,12 @@
+<p align="center">
+  <img src="./assets/banner-en.png" alt="OpenCode-Next for DSH Banner" width="100%" />
+</p>
+
+[![CI](https://github.com/kizaki-R/OpenCode-Next-for-DSH/actions/workflows/test.yml/badge.svg)](https://github.com/kizaki-R/OpenCode-Next-for-DSH/actions/workflows/test.yml)
+[![npm version](https://img.shields.io/npm/v/opencode-next?color=blue)](https://www.npmjs.com/package/opencode-next)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![DeepSeek Harness](https://img.shields.io/badge/DSH-0.1.5%20~%200.2.x-orange.svg)](https://deepseek.com/harness/)
+
 # OpenCode-Next (`opencode-next`)
 
 English | [繁體中文](./README.zh-TW.md)
