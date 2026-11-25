@@ -53,9 +53,11 @@ try {
   check('從無 node_modules 的位置，第一層 import 失敗', probeOut.first !== 'ok', probeOut.first);
 
   console.log('\n--- 2. 帶 DSH_PROFILE_DIR 時第二層拿到真的 schemastery ---');
-  // 用真實的 profile 目錄（本機存在 schemastery）。
+  // 用真實的 profile 目錄（本機或 CI 環境存在 schemastery）。
+  const dshHome = process.env.DSH_HOME
+    || path.join(process.env.USERPROFILE || process.env.HOME || '', '.dsh');
   const realProfile = process.env.DSH_PROFILE_DIR
-    || path.join(process.env.USERPROFILE || '', '.dsh', 'profiles', 'desktop');
+    || path.join(dshHome, 'profiles', 'desktop');
 
   const layerScript = path.join(work, 'layer.mjs');
   writeFileSync(layerScript, `
@@ -102,7 +104,7 @@ try {
     env: {
       ...process.env,
       DSH_PROFILE_DIR: '',                       // 刻意拿掉，逼它從 DSH_HOME 推
-      DSH_HOME: process.env.DSH_HOME || path.join(process.env.USERPROFILE || '', '.dsh'),
+      DSH_HOME: dshHome,
       DSH_PROFILE: 'desktop'
     }
   }).trim());
