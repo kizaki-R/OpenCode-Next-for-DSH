@@ -1,6 +1,6 @@
 {
   "name": "opencode-next",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "OpenCode-Next: Native OpenCode OAuth & OpenCode Go provider for DeepSeek Harness (DSH)",
   "repository": {
     "type": "git",
