@@ -23,6 +23,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Provision peer schemastery into test DSH profile
         shell: bash
         run: |
