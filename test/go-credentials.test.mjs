@@ -41,6 +41,8 @@ await check('goSubscription 預設開啟且可明確關閉', () => {
   assert.equal(cfg.goSubscription?.enabled, true);
   assert.equal(cfg.goSubscription?.providerId, 'opencode-go-subscription');
   assert.equal(cfg.goSubscription?.credentialRef, 'OPENCODE_GO_API_KEY');
+  assert.equal(cfg.goSubscription?.firstEventTimeoutMs, 180000);
+  assert.equal(resolveConfig({ goSubscription: { firstEventTimeoutMs: 240000 } }).goSubscription?.firstEventTimeoutMs, 240000);
   assert.equal('apiKey' in cfg.goSubscription, false);
   assert.equal('secret' in cfg.goSubscription, false);
   assert.equal('token' in cfg.goSubscription, false);
