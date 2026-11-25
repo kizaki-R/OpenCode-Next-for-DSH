@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
-import { environmentPayload, executeBunFetch, prepareBunRequest } from '../lib/bun-transport.js';
+import { environmentPayload, executeBunFetch, installedBunPath, prepareBunRequest } from '../lib/bun-transport.js';
 import { probeModel } from '../lib/probe.js';
 import { OpenCodeOAuthAdapter } from '../lib/adapter.js';
 
@@ -98,7 +98,7 @@ await check('Responses payload preserves existing instructions and input while a
 console.log('\n--- Bun worker streaming integration (local fixture; no network) ---');
 const temp = mkdtempSync(path.join(tmpdir(), 'ocoa-bun-transport-'));
 const fixturePath = path.join(temp, 'worker.mjs');
-const bunExe = process.env.BUN_EXE || (process.env.APPDATA
+const bunExe = process.env.BUN_EXE || installedBunPath() || (process.env.APPDATA
   ? path.join(process.env.APPDATA, 'npm', 'node_modules', 'bun', 'bin', 'bun.exe')
   : 'bun');
 const fixture = String.raw`
