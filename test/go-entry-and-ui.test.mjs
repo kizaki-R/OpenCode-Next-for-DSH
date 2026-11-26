@@ -529,7 +529,8 @@ try {
     assert.ok(enText.includes('55%'));
     assert.ok(enText.includes('GLM-5'));
     assert.equal(enText.includes('«MISSING:'), false);
-    const nonLangHan = enText.split('\n').filter((line) => /[\u4e00-\u9fff]/.test(line) && line !== '\u7b80\u4f53\u4e2d\u6587' && line !== '繁體中文');
+    const LANG_SELF = new Set(['繁', '\u7b80', '\u7b80\u4f53\u4e2d\u6587', '繁體中文']);
+    const nonLangHan = enText.split('\n').filter((line) => /[\u4e00-\u9fff]/.test(line) && !LANG_SELF.has(line));
     assert.deepEqual(nonLangHan, []);
   });
 
@@ -1224,7 +1225,8 @@ try {
     assert.equal(enSnap.text.includes('«MISSING:'), false);
     assert.ok(enSnap.text.includes('In picker'));
     assert.ok(enSnap.text.includes('Preview only'));
-    const nonLangHan = enSnap.text.split('\n').filter((line) => /[\u4e00-\u9fff]/.test(line) && line !== '\u7b80\u4f53\u4e2d\u6587' && line !== '繁體中文');
+    const LANG_SELF = new Set(['繁', '\u7b80', '\u7b80\u4f53\u4e2d\u6587', '繁體中文']);
+    const nonLangHan = enSnap.text.split('\n').filter((line) => /[\u4e00-\u9fff]/.test(line) && !LANG_SELF.has(line));
     assert.deepEqual(nonLangHan, []);
   });
 

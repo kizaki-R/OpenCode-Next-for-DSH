@@ -139,7 +139,7 @@ dsh plugin --profile desktop add opencode-next
 
 ```bash
 # 從 GitHub Release 下載安裝
-dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.0/opencode-next-1.0.0.tgz
+dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.4/opencode-next-1.0.4.tgz
 
 # 或直接從 GitHub 倉庫安裝
 dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
@@ -168,7 +168,7 @@ dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 ### 方式 4：使用打包後的 tgz 安裝（離線分發）
 
 ```bash
-dsh plugin --profile desktop add ./opencode-next-1.0.0.tgz
+dsh plugin --profile desktop add ./opencode-next-1.0.4.tgz
 ```
 
 > **改完程式碼要重新打包。** `npm pack` 只會裝進 `package.json` 的 `files` 白名單
@@ -234,16 +234,16 @@ DSH 有帳號清單時會優先讀它。若 CLI 只寫舊檔，這次登入不�
 
 ---
 
-## 🖥️ 設定頁（DSH 設定 → OpenCode OAuth）
+## 🖥️ 設定頁（DSH 設定 → OpenCode-Next）
 
-開啟 DSH 設定頁，左側會多一個「OpenCode OAuth」分頁（排序 14），內容分成四區：
+開啟 DSH 設定頁，左側會多一個「OpenCode-Next」分頁（排序 14），頂部提供動態太陽／月亮深淺主題切換鈕與 `繁` / `简` / `EN` 三語言按鈕，內容分為四個頁籤，頁尾並顯示維護者、GitHub 專案、問題回報與即時 npm 版本連結：
 
 | 區塊 | 內容 |
 | --- | --- |
-| 標題列 | 健康狀態徽章（正常／即將過期／尚未探測／尚未登入／已過期／沒有模型回應）＋一句結論 |
+| 標題列 | 健康狀態徽章（正常／即將過期／尚未探測／尚未登入／已過期／沒有模型回應）、本頁深淺主題切換鈕與 `繁` / `简` / `EN` 語言按鈕 |
 | 授權狀態 | 憑證來源、到期時間、是否可自動更新；按鈕：重新驗證憑證／登入（或重新登入）／登出 |
-| 模型 | 可用數／總數、探測時間、搜尋框、「只看有問題的」篩選、逐模型狀態／延遲／說明，以及每個模型的上下文容量設定 |
-| 診斷資訊 | provider 識別碼、外掛版本、探測間隔、目錄輪詢、圖片像素預算與位元組上限 |
+| 模型 | 可用數／總數、探測時間、搜尋框、分段篩選列、逐模型勾選框／狀態／延遲／說明，以及每個模型的上下文容量設定 |
+| 診斷與 Go | provider 識別碼、外掛版本、Bun 執行環境狀態、探測間隔、備援設定與 OpenCode Go 訂閱管理 |
 
 在模型列展開「上下文大小」，可選擇跟隨 OpenCode 目錄值或手動覆寫；「恢復預設值」會移除該模型的覆寫，不會發送探測請求。手動值會影響 DSH 收到的模型容量與預算，但不會提高上游實際上限，也不會更改 DSH 的壓縮策略。設定只保存模型 ID 與數字，位置為 `~/.dsh/opencode-next.context.json`（若設定 `DSH_HOME`，則存於該目錄）。
 
@@ -354,13 +354,13 @@ OpenCode 免費模型的 `Free usage limit reached` 主要依**網路出口 IP**
 
 ## 範圍探測
 
-模型表的探測按鈕會跟著目前篩選變：
+模型表的探測按鈕會跟著目前篩選與勾選狀態變化：
 
 | 畫面 | 按鈕 | 行為 |
 | --- | --- | --- |
-| 全部、沒有搜尋 | 重新探測 | 探測候選清單 |
-| 「可用」 | 探測可用 (n) | 只探測目前看得到的模型 |
-| 其他篩選或搜尋 | 探測清單 (n) | 同上，只送出可見的 `modelIds` |
+| 全部、沒有搜尋 | 一鍵探測 (n) | 只探測有勾選的模型（`m.shown === true`）；無勾選時停用 |
+| 「可用」 | 探測可用 (n) | 只探測已勾選且可用的模型 |
+| 其他失敗分類或搜尋 | 探測清單 (n) | 只送出目前篩選結果的 `modelIds` |
 
 結果是增量合併。這次沒探測到的模型，其延遲、可用狀態與歷史紀錄會留在 `~/.dsh/opencode-next.models.json`。切換帳號或重啟 DSH 不會清掉這份快取。篩選（例如停在「可用」）記在這個瀏覽器的 `localStorage`。
 
@@ -376,7 +376,7 @@ OpenCode 免費模型的 `Free usage limit reached` 主要依**網路出口 IP**
 
 ## OpenCode Go（訂閱資格驗證、模型目錄與文字／工具推論）
 
-本外掛內建獨立、預設關閉的 `opencode-go-subscription` provider 接點（`goSubscription.enabled` 預設為 `false`），不會影響既有免費 `opencode-next` 的模型清單、登入、設定、快取或通道行為：
+本外掛內建獨立的 `opencode-go-subscription` provider 接點（自 `v1.0.1` 起 `goSubscription.enabled` 預設為 `true`，儲存 API Key 後即可直接使用；如需停用可設為 `false`，且自 `v1.0.3` 起首事件預設逾時 `goSubscription.firstEventTimeoutMs` 為 `180000` 毫秒），不會影響既有免費 `opencode-next` 的模型清單、登入、設定、快取或通道行為：
 
 - **獨立憑證解析與設定頁管理**：使用 OpenCode Console Personal API Key，優先透過 DSH 安全憑證服務（`goSubscription.credentialRef`，預設 `OPENCODE_GO_API_KEY`）解析，不可用時退回環境變數。可在「設定頁 → OpenCode Go」透過密碼欄位直接呼叫 `ctx.credentials.set`／`ctx.credentials.unset` 儲存或清除金鑰（不預填明文、只顯示已儲存或未設定；若目前 DSH 行程不支援 `credentials.set`，按鈕會保持停用，絕不改寫進外掛設定或 JSON 檔案）。不沿用 OAuth token（`st_*`）或 `org_id`，不自動匯入其他外掛憑證，且不將明文 key 寫入一般設定、狀態 API、錯誤或日誌。
 - **官方唯讀端點**：以 Bearer key 依序查詢 `GET https://opencode.ai/inference/go/v1/usage` 驗證訂閱資格與 `GET https://opencode.ai/inference/go/v1/models` 取得工作區模型目錄，固定 `https://opencode.ai` 目的地且不跟隨重新導向。換 key 或停用時會清除獨立快取（`~/.dsh/opencode-go.cache.json`）並阻擋舊請求回寫。
@@ -385,4 +385,4 @@ OpenCode 免費模型的 `Free usage limit reached` 主要依**網路出口 IP**
 - **正式選單門檻與依目錄自動圖片支援**：僅結構合格且狀態有效之 Go 對話模型會進入正式選單。圖片輸入（透過 DSH `attachments` 服務轉成 `image_url` data URI）會依上游 Go 目錄宣告自動開放給 `modalities.input` 含 `image`／`image/*` 的入選模型（含未來上架的新視覺模型，實際可否辨識以上游端點為準）；未宣告圖片輸入或模態未知之模型維持純文字，於附圖送出前直接拒絕（絕不靜默丟圖繼續送純文字，也不退回免費 OAuth），且不開放影片、音訊或 PDF 等其他檔案附件。
 
 ## 授權條款與來源聲明
-MIT License © 2026（見 [LICENSE](./LICENSE)）。本專案衍生自原作者 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)（`Copyright (c) 2026 FishBottle7`）。
+MIT License © 2026（見 [LICENSE](./LICENSE) 與 [CHANGELOG.md](./CHANGELOG.md)）。本專案衍生自原作者 [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh)（`Copyright (c) 2026 FishBottle7`）。

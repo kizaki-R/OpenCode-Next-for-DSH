@@ -503,7 +503,7 @@ check('rendering returns an element', rendered?.__el !== undefined);
 // `h('div', { className }, childA, childB, …)`——children 在 **args[2] 之後**，
 // 不在 props 裡。只看 props.children 會什麼都找不到（我一開始就卡在這裡）。
 // 所以改用 args（createElement 的完整參數）來展開。
-function collectTree(node, acc = { classes: new Set(), options: [] }, depth = 0) {
+function collectTree(node, acc = { classes: new Set(), langs: [] }, depth = 0) {
   if (node === null || node === undefined || depth > 25) return acc;
   if (Array.isArray(node)) {
     for (const item of node) collectTree(item, acc, depth + 1);
@@ -516,7 +516,7 @@ function collectTree(node, acc = { classes: new Set(), options: [] }, depth = 0)
   // createElement 的第 3 個參數起才是 children。
   const children = node.args !== undefined ? node.args.slice(2) : props.children;
 
-  // 函式元件：呼叫它，繼續走它回傳的樹。Chip 與 LanguageSwitcher 都是自訂元件，
+  // 函式元件：呼叫它，繼續走它回傳的樹。Chip、ThemeToggle 與 LanguageSwitcher 都是自訂元件，
   // 不呼叫就看不到它們內部真正產生的 DOM。
   if (typeof node.__el === 'function') {
     let child;
@@ -532,21 +532,20 @@ function collectTree(node, acc = { classes: new Set(), options: [] }, depth = 0)
   if (typeof props.className === 'string') {
     for (const cls of props.className.split(/\s+/)) if (cls) acc.classes.add(cls);
   }
-  // <option value=…> 的 value 就是語言選項 id。
-  if (node.__el === 'option' && typeof props.value === 'string') acc.options.push(props.value);
+  if (typeof props['data-lang'] === 'string') acc.langs.push(props['data-lang']);
 
   collectTree(children, acc, depth + 1);
   return acc;
 }
 
 const tree = collectTree(rendered);
-check('the page renders a language switcher', tree.classes.has('ocoa-lang-select'),
+check('the page renders a language switcher', tree.classes.has('ocoa-lang-btn'),
   `classes: ${[...tree.classes].filter((c) => c.startsWith('ocoa-lang')).join(', ') || '（沒有 cocoa-lang-*）'}`);
-check('the switcher offers a follow-system option', tree.options.includes('auto'),
-  `options: ${tree.options.join(', ') || '（沒有 option）'}`);
-check('the switcher offers all three languages',
-  ['auto', 'en', 'zh', 'zh-Hant'].every((id) => tree.options.includes(id)),
-  `options: ${tree.options.join(', ')}`);
+check('the page renders a theme toggle button', tree.classes.has('ocoa-theme-btn'),
+  `classes: ${[...tree.classes].filter((c) => c.startsWith('ocoa-theme')).join(', ') || '（沒有 cocoa-theme-*）'}`);
+check('the switcher offers all three languages as buttons',
+  ['zh-Hant', 'zh', 'en'].every((id) => tree.langs.includes(id)),
+  `langs: ${tree.langs.join(', ')}`);
 
 check('a Traditional Chinese language is declared',
   languages.some((l) => l.id === 'zh-Hant'), JSON.stringify(languages));

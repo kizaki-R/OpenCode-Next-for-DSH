@@ -1,6 +1,6 @@
 {
   "name": "opencode-next",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "OpenCode-Next: Native OpenCode OAuth & OpenCode Go provider for DeepSeek Harness (DSH)",
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
     "lib",
     "bin",
     "cordis.patch.yml",
+    "CHANGELOG.md",
     "README.zh-TW.md"
   ],
   "bin": {

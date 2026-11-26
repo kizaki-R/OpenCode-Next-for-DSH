@@ -144,16 +144,16 @@ accepted set differs per model (for example `beam-free` accepts `low` through
 `high`, and `max`). The catalog spells "no reasoning" as `none`; DSH spells it
 `off`, and the adapter maps it back on the wire.
 
-## Settings Page (DSH Settings → OpenCode OAuth)
+## Settings Page (DSH Settings → OpenCode-Next)
 
-DSH Settings gains an "OpenCode OAuth" tab (order 14) with four blocks:
+DSH Settings gains an **OpenCode-Next** tab (order 14) with a compact top toolbar (a dynamic sun/moon light/dark theme toggle for the page and three segmented language buttons `繁` / `简` / `EN`), four main sections, and a footer showing the maintainer, repository links, and live `npm v<version>`:
 
 | Block | Contents |
 | --- | --- |
-| Header | Health badge (ready / expiring / unprobed / signed out / expired / no model responding) plus a one-line conclusion |
+| Header | Health badge (ready / expiring / unprobed / signed out / expired / no model responding), per-page theme toggle, and `繁` / `简` / `EN` language buttons |
 | Authorization | Credential source, expiry, whether it auto-refreshes; buttons for re-verify, sign in (or sign in again), and sign out |
-| Models | Available vs. total, last probe time, search, an "only problems" filter, per-model status / latency / explanation, and a context-window setting for each model |
-| Diagnostics | Provider id, plugin version, probe interval, catalog poll, image pixel budget and byte cap |
+| Models | Available vs. total, last probe time, search, segmented category filter, per-model picker toggle, status / latency / explanation, and a context-window setting for each model |
+| Diagnostics & Go | Provider id, plugin version, Bun runtime status, probe/poll intervals, fallback chain, and OpenCode Go subscription management |
 
 Expand a model's **Context window** setting to follow the OpenCode catalog value or enter a manual override. **Restore default** removes that model's override; it does not send a probe request. A manual value changes the capacity and budget DSH receives, but does not raise OpenCode's actual limit or change DSH's compaction policy. Only model IDs and numeric values are stored in `~/.dsh/opencode-next.context.json` (or under `DSH_HOME` when set).
 
@@ -237,7 +237,7 @@ Alternative sources:
 
 ```bash
 # Install from GitHub Release tarball
-dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.0/opencode-next-1.0.0.tgz
+dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.4/opencode-next-1.0.4.tgz
 
 # Or directly from GitHub
 dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
@@ -249,7 +249,7 @@ dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 
 ```bash
 npm pack
-dsh plugin --profile desktop add ./opencode-next-1.0.0.tgz
+dsh plugin --profile desktop add ./opencode-next-1.0.4.tgz
 ```
 
 > **Re-pack after changing the source.** `npm pack` only includes files matched
@@ -323,13 +323,13 @@ Detection only accepts an absolute path found on `PATH`, so a same-named binary 
 
 ## Scoped probes
 
-The probe button follows the current filter:
+The probe button follows the current filter and checked selection:
 
 | View | Button | What is probed |
 | --- | --- | --- |
-| All, no search | Re-probe | The candidate list |
-| Available | Probe available (n) | Only the models on screen |
-| Any other filter or search | Probe list (n) | Same, via the visible `modelIds` |
+| All, no search | One-click probe (n) | Only checked models (`m.shown === true`); disabled when `n = 0` |
+| Available | Probe available (n) | Only checked available models |
+| Failure filter or search | Probe list (n) | Filtered/matched models via `modelIds` |
 
 Results merge. Models not in this run keep their latency, availability, and history in `~/.dsh/opencode-next.models.json`. Switching accounts or restarting DSH does not delete that cache. The filter (for example staying on Available) is remembered in this browser's `localStorage`.
 
@@ -347,7 +347,7 @@ The Advanced switch is off by default. When on, inference is sent without the pe
 
 ## OpenCode Go (Subscription Verification, Model Preview & Text/Tool Inference)
 
-An independent, opt-in `opencode-go-subscription` provider is included alongside `opencode-next` (`goSubscription.enabled` defaults to `false` so existing free OAuth behavior stays unchanged):
+An independent `opencode-go-subscription` provider is included alongside `opencode-next` (`goSubscription.enabled` defaults to `true` since `v1.0.1` so saving a Personal API Key works out of the box; set `goSubscription.enabled: false` in `cordis.patch.yml` to disable, and `goSubscription.firstEventTimeoutMs` defaults to `180000` ms):
 
 - **Isolated credential resolution & UI management**: Uses an OpenCode Console Personal API Key via DSH's `credentials` service first (`goSubscription.credentialRef`, default `OPENCODE_GO_API_KEY`), falling back to the environment variable. In Settings → OpenCode Go, you can save or clear the key directly via `ctx.credentials.set` / `ctx.credentials.unset` without exposing or prefilling plaintext keys (if `credentials.set` is unavailable in the current DSH process, the button stays disabled and the key is never written into plugin config or JSON files). It never reuses OAuth tokens (`st_*`), `org_id`, or credentials from other plugins, and never stores plaintext keys in plugin config, status APIs, errors, or logs.
 - **Read-only official endpoints**: Queries `GET https://opencode.ai/inference/go/v1/usage` to verify Go subscription entitlement, followed by `GET https://opencode.ai/inference/go/v1/models` for workspace model metadata (`redirect: 'manual'`, fixed `https://opencode.ai` origin). Key changes or disabling clears the isolated cache (`~/.dsh/opencode-go.cache.json`) and blocks stale in-flight writes.
@@ -357,4 +357,4 @@ An independent, opt-in `opencode-go-subscription` provider is included alongside
 
 ## License & Attribution
 
-MIT License — see [LICENSE](./LICENSE). Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh) (`Copyright (c) 2026 FishBottle7`).
+MIT License — see [LICENSE](./LICENSE) and [CHANGELOG.md](./CHANGELOG.md). Derived from [FishBottle7/opencode2dsh](https://github.com/FishBottle7/opencode2dsh) (`Copyright (c) 2026 FishBottle7`).

@@ -751,19 +751,82 @@ check('a denied sign-in is not described as a timeout',
 // a fixed Chinese sentence, so rendering it verbatim made the English page
 // bilingual; the page now resolves it from its own dictionary by health code.
 //
-// 例外：語言切換鍵裡的語言名稱一律用該語言自己的寫法（'简体中文'、'繁體中文'）。
-// 這是國際慣例，也才讓看不懂目前語言的讀者找得到自己的語言——所以這兩個字串
+// 例外：語言切換鍵裡的按鈕短標籤（'繁'、'简'）與完整語言名稱一律用該語言自己的寫法。
+// 這是國際慣例，也才讓看不懂目前語言的讀者找得到自己的語言——所以這些字串
 // 不算「英文頁混入中文」，其餘任何中文才算。
-const LANGUAGE_SELF_NAMES = new Set(['简体中文', '繁體中文']);
+const LANGUAGE_SELF_NAMES = new Set(['繁', '简', '简体中文', '繁體中文']);
 const han = en.texts
   .filter((s) => /[\u4e00-\u9fff]/.test(s))
   .filter((s) => !LANGUAGE_SELF_NAMES.has(s));
 check('the English page contains no Chinese text', han.length === 0, han.slice(0, 4).join(' | '));
 
-// 但語言名稱本身必須在場，否則英文使用者找不到切換到中文的入口。
+// 但語言按鈕本身必須在場，否則英文使用者找不到切換到中文的入口。
 const enAll = en.texts.join('\n');
-check('the English page still offers the Chinese language names',
-  enAll.includes('简体中文') && enAll.includes('繁體中文'));
+check('the English page still offers the Chinese language buttons',
+  enAll.includes('繁') && enAll.includes('简')
+  && en.elements.some((el) => el.props?.['data-lang'] === 'zh-Hant' && el.props?.title === '繁體中文')
+  && en.elements.some((el) => el.props?.['data-lang'] === 'zh' && el.props?.title === '简体中文'));
+
+check('the footer renders maintainer and dynamic npm version',
+  zh.texts.includes('@kizaki-R') && zh.texts.includes('npm v0.1.0'));
+check('the theme toggle button renders in the header actions',
+  zh.elements.some((el) => el.className === 'ocoa-theme-btn' && (el.props?.['data-theme-mode'] === 'dark' || el.props?.['data-theme-mode'] === 'light')));
+
+/* ----------------------------------------------------- Checked-only probe */
+
+console.log('\nzh-Hant: one-click probe targets checked models only');
+
+{
+  const checkedStatus = statusWithPendingLogin();
+  checkedStatus.models = {
+    total: 3,
+    probed: 3,
+    available: 2,
+    probedAt: Date.now(),
+    breakdown: [],
+    models: [
+      { id: 'checked-a', name: 'Checked A', probed: true, ok: true, valid: true, available: true, shown: true, contextWindow: 128000 },
+      { id: 'unchecked-b', name: 'Unchecked B', probed: true, ok: true, valid: true, available: true, shown: false, contextWindow: 128000 },
+      { id: 'checked-c', name: 'Checked C', probed: true, ok: true, valid: true, available: true, shown: true, contextWindow: 128000 }
+    ]
+  };
+  const checkedPage = renderPage('zh-Hant', DONE(checkedStatus));
+  const probeBtn = checkedPage.elements.find((el) => el.props?.['data-probe-btn'] === 'true');
+  check('one-click probe counts only checked models',
+    probeBtn?.props?.['data-probe-count'] === 2 && probeBtn?.props?.disabled === false && checkedPage.texts.includes('一鍵探測 (2)'));
+
+  const sentBodies = [];
+  const prevFetch = sandbox.fetch;
+  sandbox.fetch = async (url, init) => {
+    sentBodies.push({ url, body: init?.body ? JSON.parse(init.body) : null });
+    return { text: async () => JSON.stringify({ ok: true, value: checkedStatus }) };
+  };
+  try {
+    await probeBtn?.props?.onClick?.();
+  } finally {
+    sandbox.fetch = prevFetch;
+  }
+  const probeReq = sentBodies.find((r) => String(r.url).endsWith('/probe'));
+  check('one-click probe sends only checked model ids',
+    JSON.stringify(probeReq?.body) === JSON.stringify({ modelIds: ['checked-a', 'checked-c'] }),
+    JSON.stringify(probeReq));
+
+  const emptyCheckedStatus = statusWithPendingLogin();
+  emptyCheckedStatus.models = {
+    total: 1,
+    probed: 1,
+    available: 1,
+    probedAt: Date.now(),
+    breakdown: [],
+    models: [
+      { id: 'unchecked-only', name: 'Unchecked Only', probed: true, ok: true, valid: true, available: true, shown: false, contextWindow: 128000 }
+    ]
+  };
+  const emptyPage = renderPage('zh-Hant', DONE(emptyCheckedStatus));
+  const emptyBtn = emptyPage.elements.find((el) => el.props?.['data-probe-btn'] === 'true');
+  check('one-click probe is disabled when no model is checked',
+    emptyBtn?.props?.['data-probe-count'] === 0 && emptyBtn?.props?.disabled === true);
+}
 
 /* ------------------------------------------------------------------ Loading */
 
