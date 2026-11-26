@@ -335,6 +335,55 @@ check('cross-port loopback origin is rejected with 403', crossPortForbidden.stat
 const localOriginAllowed = await call('POST', '/opencode-next/api/auto-switch', JSON.stringify({ enabled: true }), { host: '127.0.0.1:8428', origin: 'http://127.0.0.1:8428' });
 check('local 127.0.0.1 matching-port origin is allowed', localOriginAllowed.status === 200 && localOriginAllowed.parsed?.ok === true);
 
+// Host connection.requestRejection admission policy (DSH 0.2.0-rc.2+)
+async function callWithConnection(rejectionFn, reqOverrides = {}) {
+  let reg = null;
+  registerWebApi(
+    {
+      get: (name) => (name === 'connection' ? { requestRejection: rejectionFn } : undefined),
+      inject(deps, fn) {
+        fn({
+          effect: (fn2) => fn2(),
+          get: (name) => (name === 'connection' ? { requestRejection: rejectionFn } : undefined),
+          webServer: { register: (opts) => { reg = opts; } }
+        });
+      }
+    },
+    { tokenManager, catalog, statusReporter: reporter, config: {} }
+  );
+  const resObj = {
+    status: null, headers: null, body: undefined,
+    writeHead(s, h) { this.status = s; this.headers = h; },
+    end(b) { this.body = b; }
+  };
+  await reg.handler({ method: 'GET', url: '/opencode-next/api/status', headers: {}, ...reqOverrides }, resObj);
+  return resObj;
+}
+
+const rejected403 = await callWithConnection(() => 403, { headers: { origin: 'https://foreign.example' } });
+check('connection.requestRejection 403 returns 403 with empty body and no-store',
+  rejected403.status === 403 && rejected403.body === undefined && rejected403.headers?.['cache-control'] === 'no-store');
+
+const rejected401 = await callWithConnection(() => 401);
+check('connection.requestRejection 401 returns 401 with empty body and no-store',
+  rejected401.status === 401 && rejected401.body === undefined && rejected401.headers?.['cache-control'] === 'no-store');
+
+const thrownRejection = await callWithConnection(() => { throw new Error('boom'); });
+check('throwing connection.requestRejection fails closed with 403',
+  thrownRejection.status === 403 && thrownRejection.body === undefined);
+
+const trustedRemote = await callWithConnection(() => undefined, {
+  headers: { host: 'dsh.lan:8428', origin: 'https://dsh.lan:8428', 'sec-fetch-site': 'same-origin' }
+});
+check('connection.requestRejection allows host-trusted remote origin',
+  trustedRemote.status === 200 && JSON.parse(trustedRemote.body)?.ok === true);
+
+const crossSiteEvenWithConnection = await callWithConnection(() => undefined, {
+  headers: { 'sec-fetch-site': 'cross-site' }
+});
+check('cross-site sec-fetch-site is still blocked even when connection returns undefined',
+  crossSiteEvenWithConnection.status === 403);
+
 // An internal throw must come back as a readable message, not a bare 500: the
 // page has nowhere else to learn why login cannot proceed.
 const brokenReporter = {

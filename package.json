@@ -1,7 +1,8 @@
 {
   "name": "opencode-next",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "OpenCode-Next: Native OpenCode OAuth & OpenCode Go provider for DeepSeek Harness (DSH)",
+  "icon": "./icon.svg",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kizaki-R/OpenCode-Next-for-DSH.git"
@@ -16,11 +17,17 @@
     ".": "./lib/index.js",
     "./client": "./lib/ui.js",
     "./config": "./lib/config.js",
+    "./icon": "./icon.svg",
+    "./locale/en.json": "./locale/en.json",
+    "./locale/zh.json": "./locale/zh.json",
+    "./locale/zh-Hant.json": "./locale/zh-Hant.json",
     "./package.json": "./package.json"
   },
   "files": [
     "lib",
     "bin",
+    "locale",
+    "icon.svg",
     "cordis.patch.yml",
     "CHANGELOG.md",
     "README.zh-TW.md"
@@ -61,7 +68,8 @@
       "dsh": ">=0.1.5-rc.1 <0.3.0",
       "dshReleases": {
         "0.1.5-rc.1": "compatible",
-        "0.2.0-rc.2": "compatible"
+        "0.2.0-rc.2": "compatible",
+        "0.2.1-rc.5": "compatible"
       }
     }
   },

@@ -2,6 +2,15 @@
 
 All notable changes to `opencode-next` (`OpenCode-Next-for-DSH`) are documented in this file.
 
+## [1.0.5] - 2026-11-26
+
+### Added
+- Added root `icon.svg` (`./icon`) and localized plugin metadata (`locale/en.json`, `locale/zh.json`, `locale/zh-Hant.json`) so DSH's Installed Plugins list displays the OpenCode-Next logo, title, and localized description.
+- Integrated DSH host HTTP route admission via `connection.requestRejection` (`401`/`403` empty-body rejections with `cache-control: no-store` and fail-closed error handling) in `lib/web-api.js`, while retaining explicit `sec-fetch-site` and local loopback fallback checks for older DSH releases (`>=0.1.5-rc.1 <0.3.0`).
+
+### Changed
+- Recorded DSH `0.2.1-rc.5` in `dsh.compatibility.dshReleases` in `package.json`.
+
 ## [1.0.4] - 2026-11-26
 
 ### Fixed

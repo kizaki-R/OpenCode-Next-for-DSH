@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenCode-Next",
+    "description": "Native OpenCode OAuth & OpenCode Go provider for DeepSeek Harness: dual-track OAuth, Bun transport, model probing & curation, and Go subscription quota tracking."
+  }
+}

@@ -139,7 +139,7 @@ dsh plugin --profile desktop add opencode-next
 
 ```bash
 # 從 GitHub Release 下載安裝
-dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.4/opencode-next-1.0.4.tgz
+dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.5/opencode-next-1.0.5.tgz
 
 # 或直接從 GitHub 倉庫安裝
 dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
@@ -168,7 +168,7 @@ dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 ### 方式 4：使用打包後的 tgz 安裝（離線分發）
 
 ```bash
-dsh plugin --profile desktop add ./opencode-next-1.0.4.tgz
+dsh plugin --profile desktop add ./opencode-next-1.0.5.tgz
 ```
 
 > **改完程式碼要重新打包。** `npm pack` 只會裝進 `package.json` 的 `files` 白名單

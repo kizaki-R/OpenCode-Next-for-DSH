@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OpenCode-Next",
+    "description": "DeepSeek Harness 的 OpenCode OAuth 与 OpenCode Go 模型供应商：支持双轨 OAuth、Bun 原生传输、模型可用性探测、自定义清单及 Go 订阅额度管理。"
+  }
+}

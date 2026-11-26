@@ -237,7 +237,7 @@ Alternative sources:
 
 ```bash
 # Install from GitHub Release tarball
-dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.4/opencode-next-1.0.4.tgz
+dsh plugin --profile desktop add https://github.com/kizaki-R/OpenCode-Next-for-DSH/releases/download/v1.0.5/opencode-next-1.0.5.tgz
 
 # Or directly from GitHub
 dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
@@ -249,7 +249,7 @@ dsh plugin --profile desktop add github:kizaki-R/OpenCode-Next-for-DSH
 
 ```bash
 npm pack
-dsh plugin --profile desktop add ./opencode-next-1.0.4.tgz
+dsh plugin --profile desktop add ./opencode-next-1.0.5.tgz
 ```
 
 > **Re-pack after changing the source.** `npm pack` only includes files matched
